@@ -1,6 +1,6 @@
 // to do  - loop for motionprofileCTRE should be in autoperiodic or teleopperiodic
 // edit smartdash
-// Addeds comment 8:20
+// Added comment 8:20
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
