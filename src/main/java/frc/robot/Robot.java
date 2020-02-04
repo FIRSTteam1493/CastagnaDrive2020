@@ -1,6 +1,6 @@
 // to do  - loop for motionprofileCTRE should be in autoperiodic or teleopperiodic
 // edit smartdash
-// Commit To Github
+// Addeds comment 8:20
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -11,7 +11,6 @@ import com.revrobotics.CANDigitalInput;
 import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;
 import badlog.lib.BadLog;
-import edu.wpi.first.wpilibj.AnalogGyro;
 
 public class Robot extends TimedRobot {
     static boolean runningPID = false;
