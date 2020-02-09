@@ -57,8 +57,7 @@ public class Robot extends TimedRobot {
 }
 
     log.finishInitialization();
-   straightprofile = new Profile("/home/lvuser/profile_straight120_48.profile",2);
-   arcprofile = new Profile("/home/lvuser/profile_arc120_48.profile",2);   
+   arcprofile = new Profile("/home/lvuser/profile_straightArc120_48.profile",2);   
 //   arcprofile = new Profile("/home/lvuser/arc1_24Profile.profile",1);
 //   rotateprofile = new Profile("/home/lvuser/rotate1",1);
 
@@ -114,21 +113,22 @@ public class Robot extends TimedRobot {
     // Button 8 - run ctre motionProfile
 
  //  pidRotateMagic.run(90.0);
-    if (joy0.getButton(5) &&!joy0.getPrevButton(5) ) 
-        pidRotate.run(90.0,true);
+    if (joy0.getButton(5) &&!joy0.getPrevButton(5) ) {}
+//        pidRotate.run(90.0,true);
 
 // Magic Motion Straight
      else if (joy0.getButton(6) && !joy0.getPrevButton(6)  ) 
-         pidStraightMagic.run(60.0);    
+         pidStraightMagic.run(120.0);    
 
 // run lightlight generated profile
-    else if (joy0.getButton(7)  && !joy0.getPrevButton(7) && !runningPID)
-                limelight.driveStraightToTarget();
+    else if (joy0.getButton(7)  && !joy0.getPrevButton(7) && !runningPID){}
+   //             limelight.driveStraightToTarget();
 
 // run storied profile
-    else if (joy0.getButton(8) && !joy0.getPrevButton(8) && !runningPID)
-         mpctre.runProfile(straightprofile.stream);
-   
+    else if (joy0.getButton(8) && !joy0.getPrevButton(8) && !runningPID){
+         mpctre.runProfile(arcprofile.stream);
+    }
+  
 // else drive manually         
     if(!runningPID) 
         drive.setMotors(joy0.getLeft(),joy0.getRight(),ControlMode.Velocity);

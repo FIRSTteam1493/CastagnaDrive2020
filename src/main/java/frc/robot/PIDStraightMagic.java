@@ -38,7 +38,7 @@ PIDStraightMagic(FalconDriveCTRE _drive, Stick _joystick){
                 timeOnTarget=0.0;    
 
             writePIDVars(measured_dist, errorp);
-//            System.out.println("A2  target="+targetPos+"   error="+errorp+"   ToT="+timeOnTarget);
+            System.out.println("A2  target="+targetPos+"   error="+errorp+"   ToT="+timeOnTarget);
 
             if(timeOnTarget>1 || 
                 Math.abs(joystick.getRawAxis(1))>0.1 ){

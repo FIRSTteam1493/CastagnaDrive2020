@@ -22,17 +22,17 @@ public class FalconDriveCTRE{
 
     static boolean FX = Robot.FX;
     
-/*  TalonFX bl = new TalonFX(2);
+  TalonFX bl = new TalonFX(2);
     TalonFX br = new TalonFX(4);
     TalonFX fl = new TalonFX(1);
     TalonFX fr = new TalonFX(3);
-*/
+
   
-    TalonSRX bl = new TalonSRX(2);
+/*    TalonSRX bl = new TalonSRX(2);
     TalonSRX br = new TalonSRX(4);
     TalonSRX fl = new TalonSRX(1);
     TalonSRX fr = new TalonSRX(3);
-    
+*/    
 
     double ramptime = 0.0;
     double leftIn=0,rightIn=0;
@@ -149,6 +149,8 @@ public void writeEncoderData(){
     SmartDashboard.putNumber("Left Vel RPM", getlvel()*600/Constants.kSensorUnitsPerRotation);
     SmartDashboard.putNumber("Right Vel RPM", getrvel()*600/Constants.kSensorUnitsPerRotation );
     SmartDashboard.putNumber("Angle", getAngle() );
+    SmartDashboard.putNumber("CLE_Right", br.getClosedLoopError(0));
+  //  System.out.println(br.getClosedLoopError(0) + "  " + br.getClosedLoopTarget() + "   " + br.getSelectedSensorVelocity());
 
 }
 
@@ -207,7 +209,7 @@ fl.setInverted(false);
 
 // set the sensor phase 
 bl.setSensorPhase(true);
-br.setSensorPhase(true);
+br.setSensorPhase(false);
 
 // front follows back
 fr.follow(br);
@@ -325,7 +327,7 @@ public void setupTalonMotionMagicStraight(){
 
     // remote sensor 1 is the gyro         
     br.configRemoteFeedbackFilter(gyro.getDeviceID(),
-        RemoteSensorSource.GadgeteerPigeon_Yaw, 1,20);  
+        RemoteSensorSource.Pigeon_Yaw, 1,20);  
         
 
     // primary PID 0 uses the sum of the encoder values 
@@ -340,10 +342,10 @@ public void setupTalonMotionMagicStraight(){
 	br.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor1, 1, 0);
     br.configSelectedFeedbackCoefficient(1.0, 1, 20);
     // set left output = PID0+PID1, right output PID0-PID1   
-    br.configAuxPIDPolarity(false, 20);
+    br.configAuxPIDPolarity(true, 20);
     
-    br.configMotionAcceleration(500, 20);
-    br.configMotionCruiseVelocity(250, 20);
+    br.configMotionAcceleration(12000, 20);
+    br.configMotionCruiseVelocity(6000, 20);
     br.configMotionSCurveStrength(4, 20);
 
     setPIDGains(Constants.slot_pos,Constants.posMP);
