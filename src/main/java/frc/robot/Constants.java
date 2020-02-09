@@ -61,32 +61,32 @@ public class Constants{
     
     Constants(){
         if(Robot.FX){
-            kSensorUnitsPerRotation=2048;  
-            wheelDiam = 5.44;
+            kSensorUnitsPerRotation=2048*10.39;  
+            wheelDiam = 5.9609;
             wheelCircum = Math.PI*wheelDiam; //17.09
             kSensorUnitsPerInch=(kSensorUnitsPerRotation/wheelCircum);  // 
             k_InchPerSecToVelUnits=(kSensorUnitsPerInch/10);  //
-            maxRPM=468;  //  (actually max vel units/100ms)
+            maxRPM=18000;  //  (actually max vel units/100ms)
             maxVelUnitsPer100ms=468;  // ,measured on blocks  (encoder units/100ms)
             // kP  KI,  kD,   kIz,   kFF,   kMin,   kMax,   Key for smartdash;
-            vel=new Gains(0.0, 0.0, 0.0, 20, 2.158, -1, 1, "vel");  // 1023/468
-            posMP=new Gains(3, 0, 1, 0, 2.158, -1, 1, "posMP");
-            pos=new Gains(0, 0, 0, 0, 0, -1, 1, "pos");
+            vel=new Gains(0.000050, 0.0, 0.0, 20, 0.0593, -1, 1, "vel");  // 1023/468
+            posMP=new Gains(.01, 0, 1, 0,  0.0593, -1, 1, "posMP");
+            pos=new Gains(0.034900, 0, 0, 0, 0.0593, -1, 1, "pos");
             angleRot=new Gains(0.0175, 0.0, 0.170, 0, 0.0, -1.0, 1.0, "rotate");
-            angleMP=new Gains(3, 0, 2, 0, 0, -0.5, 0.5, "angleMP");
+            angleMP=new Gains(60, 0, 3, 0, 0, -0.5, 0.5, "angleMP");
             sonar=new Gains(0, 0, 0, 0, 0.0, -1, 1, "sonar");
             other=new Gains(0, 0, 0, 0, 0.0 , -1, 1, "other");    
         }
 
         else{
             kSensorUnitsPerRotation=512;  // use this for 2019 robot
-            wheelDiam = 5.44;
+            wheelDiam = 5.9606;
             wheelCircum = Math.PI*wheelDiam; //17.09
             kSensorUnitsPerInch=(kSensorUnitsPerRotation/wheelCircum);  // 30
             k_InchPerSecToVelUnits=(kSensorUnitsPerInch/10);  // 3
-            maxRPM=468;  //  (actually max vel units/100ms)
+            maxRPM=18000;  //  (actually max vel units/100ms)
             maxVelUnitsPer100ms=468;  // ,measured on blocks  (encoder units/100ms)
-            vel=new Gains(0.0, 0.0, 0.0, 20, 2.158, -1, 1, "vel");  // 1023/468
+            vel=new Gains(0.00005, 0.0, 0.0, 20, 0.05683, -1, 1, "vel");  // 1023/468
             posMP=new Gains(3, 0, 1, 0, 2.158, -1, 1, "posMP");
             pos=new Gains(0, 0, 0, 0, 0, -1, 1, "pos");
             angleRot=new Gains(0.0175, 0.0, 0.170, 0, 0.0, -1.0, 1.0, "rotate");
