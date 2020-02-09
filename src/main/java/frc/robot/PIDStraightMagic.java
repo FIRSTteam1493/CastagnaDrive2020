@@ -53,12 +53,16 @@ PIDStraightMagic(FalconDriveCTRE _drive, Stick _joystick){
 
 
 
-public void run(double _targetPos){
+public void run(double _targetPos, int vel, int acc){
     Robot.runningPID=true;
     drive.setupTalonTeleop(); 
     drive.resetEncoders();
     drive.resetGyro();
-    drive.setupTalonMotionMagicStraight();       
+    drive.setupTalonMotionMagicStraight();
+    drive.br.configMotionAcceleration(acc, 20);
+    drive.br.configMotionCruiseVelocity(vel, 20);
+    drive.br.configMotionSCurveStrength(4, 20);
+       
     targetPos=_targetPos*Constants.kSensorUnitsPerInch;
     System.out.println("A1 "+targetPos);
     _notifier.startPeriodic(0.01);
