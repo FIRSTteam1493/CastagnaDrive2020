@@ -29,9 +29,16 @@ public class MotionProfileCTRE{
                 if(i<(profile.size-1) )i++;
                 iend=i;
                 count++;
-                if(count%10==0) System.out.println(drive.br.getActiveTrajectoryPosition(0)+"   "+
-                +drive.br.getClosedLoopError(0)+"   "+drive.br.getActiveTrajectoryPosition(1)+
-                "  "+drive.br.getClosedLoopError(1));
+                if(count%10==0){
+                     System.out.println(
+                     "ATP_0 "+drive.br.getActiveTrajectoryPosition(0)+"   "+
+                     "CLE_0 "+drive.br.getClosedLoopError(0)+"   "+
+                     "ATP_1 "+drive.br.getActiveTrajectoryPosition(1)+"  "+
+                     "CLE_1 "+drive.br.getClosedLoopError(1));
+                    count=0;
+                }
+
+
                 if ( drive.br.isMotionProfileFinished() || stick.isPushed()) {
                     Robot.runningPID=false;
                     stop();
