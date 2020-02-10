@@ -16,7 +16,7 @@ double targetPos;
 
 private Notifier _notifier;
 
-
+int count=0;
 double motionTargetAngle;  
 
 PIDStraightMagic(FalconDriveCTRE _drive, Stick _joystick){
@@ -38,7 +38,14 @@ PIDStraightMagic(FalconDriveCTRE _drive, Stick _joystick){
                 timeOnTarget=0.0;    
 
             writePIDVars(measured_dist, errorp);
-            System.out.println("A2  target="+targetPos+"   error="+errorp+"   ToT="+timeOnTarget);
+            count++;
+            if(count%10==0) {System.out.println(
+                "CLT_0 "+drive.br.getClosedLoopTarget(0)+"   "+
+                "CLE_0 "+drive.br.getClosedLoopError(0)+"   "+
+                "CLT_1 "+drive.br.getClosedLoopTarget(1)+"  "+
+                "CLE_1 "+drive.br.getClosedLoopError(1));
+                count=0;
+            }
 
             if(timeOnTarget>1 || 
                 Math.abs(joystick.getRawAxis(1))>0.1 ){
@@ -62,7 +69,6 @@ public void run(double _targetPos, int vel, int acc){
     drive.br.configMotionAcceleration(acc, 20);
     drive.br.configMotionCruiseVelocity(vel, 20);
     drive.br.configMotionSCurveStrength(4, 20);
-       
     targetPos=_targetPos*Constants.kSensorUnitsPerInch;
     System.out.println("A1 "+targetPos);
     _notifier.startPeriodic(0.01);
