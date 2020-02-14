@@ -11,22 +11,22 @@ import com.revrobotics.CANDigitalInput;
 import org.opencv.core.Mat;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import org.opencv.videoio.VideoCapture;
-import badlog.lib.BadLog;
+//import badlog.lib.BadLog;
 
 public class Robot extends TimedRobot {
     static boolean runningPID = false;
     public static boolean FX = true;
     Constants constants = new Constants();
-    BadLog log;
+//    BadLog log;
     VideoCapture camera;
     GripPipeline grip = new GripPipeline();
     Sonar sonar = new Sonar(1);
  //   SonarDigital sonarDigital = new SonarDigital();
     Stick joy0 = new Stick(0);
     FalconDriveCTRE drive = new FalconDriveCTRE();  
+    Elevator elevator = new Elevator();
     MotionProfileCTRE mpctre = new MotionProfileCTRE(drive, joy0);
     Limelight limelight = new Limelight(joy0, drive, mpctre);
-    Profile straightarc_48, straightarc_96, wof_goal;
     PIDRotate pidRotate = new PIDRotate(drive,joy0);  
     PIDRotateMagic pidRotateMagic = new PIDRotateMagic(drive,joy0);  
     PIDStraightMagic pidStraightMagic = new PIDStraightMagic(drive,joy0);
@@ -40,6 +40,7 @@ public class Robot extends TimedRobot {
     Mat frame = new Mat();
     int counter=0;
 
+    Profile straight60_48,straightarc60_48, straightarc120_48, straightarc120_96, wof_goal;
 
   @Override
   public void robotInit() {
@@ -51,13 +52,15 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("Rotate180", "Rotate180");
     m_chooser.addOption("Straight120_48ips", "Straight120_48ips");
     m_chooser.addOption("Straight120_96ips", "Straight120_96ips");
-    m_chooser.addOption("Profile_straightarc_48", "Profile_straightarc_48");
-    m_chooser.addOption("Profile_straightarc_96", "Profile_straightarc_96");
+    m_chooser.addOption("Profile_straight60_48", "Profile_straight60_48");
+    m_chooser.addOption("Profile_straightarc60_48", "Profile_straightarc60_48");
+    m_chooser.addOption("Profile_straightarc120_48", "Profile_straightarc120_48");
+    m_chooser.addOption("Profile_straightarc120_96", "Profile_straightarc120_96");
     m_chooser.addOption("Profile_outback_96", "Profile_outback_96");
     m_chooser.addOption("Profile_WOF_Goal", "Profile_WOF_Goal");
 
     SmartDashboard.putData("Auto choices", m_chooser);
-
+/*
     log = BadLog.init("/home/lvuser/test.bag");{
     BadLog.createValue("Date", " "+Timer.getFPGATimestamp());
     BadLog.createTopic("Vel_L", "rpm", ()->drive.getlvel()  );
@@ -70,9 +73,12 @@ public class Robot extends TimedRobot {
 }
 
     log.finishInitialization();
-    straightarc_48 = new Profile("/home/lvuser/profile_straightArc120_48.profile",2);   
-    straightarc_96 = new Profile("/home/lvuser/profile_straightArc120_96.profile",2);   
-    wof_goal = new Profile("/home/lvuser/wof_goal",2);   
+*/
+    straight60_48 = new Profile("/home/lvuser/profile_straight60_48.profile",2);   
+    straightarc60_48 = new Profile("/home/lvuser/profile_straightArc60_48.profile",2);   
+ //   straightarc120_48 = new Profile("/home/lvuser/profile_straightArc120_48.profile",2);   
+//    straightarc120_96 = new Profile("/home/lvuser/profile_straightArc120_96.profile",2);   
+//    wof_goal = new Profile("/home/lvuser/profile_wof_goal.profile",2);   
 
 }
 
@@ -87,13 +93,21 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
   }
+
   
+  @Override
+  public void teleopInit() {
+  //    elevator.calibrate();
+  }
 
   @Override
   public void teleopPeriodic() {
 
     joy0.readStick();
-    
+    if (elevator.calibrated==0 ) {
+        System.out.println("Start calibtation0");
+
+        elevator.calibrate();}
 // write position and velocity to smartdashboard         
 
     //  Choose a  non-drive actions
@@ -117,6 +131,10 @@ public class Robot extends TimedRobot {
         camera.read(frame);
         grip.process(frame);
     }
+    else if (joy0.getButton(9) && !joy0.getPrevButton((9)) ){
+        if(elevator.calibrated==2) elevator.setPosition();
+    }
+
 
 
      // Choose a drive actions  - either run a PID or drive from stick   
@@ -140,15 +158,21 @@ public class Robot extends TimedRobot {
             break;                
             case "Straight120_96ips":
                 pidStraightMagic.run(120.0,6000,12000);    
-            break;                
-            case "Profile_straightarc_48":
-               mpctre.runProfile(straightarc_48.stream); 
+            break;               
+            case "Profile_straight60_48":
+                mpctre.runProfile(straight60_48); 
+             break;                           
+            case "Profile_straightarc60_48":
+                mpctre.runProfile(straightarc60_48); 
+             break;                           
+            case "Profile_straightarc120_48":
+               mpctre.runProfile(straightarc120_48); 
             break;                           
-            case "Profile_straightarc_96":
-                mpctre.runProfile(straightarc_96.stream);    
+            case "Profile_straightarc120_96":
+                mpctre.runProfile(straightarc120_96);    
             break;                           
             case "Profile_WOF_Goal":
-                mpctre.runProfile(wof_goal.stream);    
+                mpctre.runProfile(wof_goal);    
             break;                           
 
             default:
@@ -163,19 +187,18 @@ public class Robot extends TimedRobot {
     else if (joy0.getButton(7)  && !joy0.getPrevButton(7) && !runningPID){}
    //             limelight.driveStraightToTarget();
 
-  
+ 
 // else drive manually         
     if(!runningPID) 
         drive.setMotors(joy0.getLeft(),joy0.getRight(),ControlMode.Velocity);
-
     
      
     
     drive.writeEncoderData();
     limelight.getLimelightData();
     counter++;
-    log.updateTopics();
-    log.log();
+//    log.updateTopics();
+//    log.log();
 
 
   }

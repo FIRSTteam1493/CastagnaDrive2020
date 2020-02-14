@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motion.BufferedTrajectoryPointStream;
 import com.ctre.phoenix.motion.MotionProfileStatus;
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -26,7 +27,7 @@ public class MotionProfileCTRE{
             public void run() {
                 if ( profile.action1[i]!=act1) System.out.println("i "+i+"   act1 "+act1);
                 act1=profile.action1[i];
-                if(i<(profile.size-1) )i++;
+                if(i<(profile.size-2) )i++;
                 iend=i;
                 count++;
                 if(count%10==0){
@@ -49,7 +50,8 @@ public class MotionProfileCTRE{
         notifier = new Notifier(new PeriodicRunnable());
     }
 
-    public void runProfile(BufferedTrajectoryPointStream stream) {
+    public void runProfile(Profile _profile) {
+        profile = _profile;
         iend=0;
         count=0;
         drive.setupTalonTeleop();
@@ -58,7 +60,7 @@ public class MotionProfileCTRE{
         drive.setupTalonMP();
         time1=System.nanoTime();
         Robot.runningPID=true;
-        drive.br.startMotionProfile(stream, 10, ControlMode.MotionProfileArc);
+        drive.br.startMotionProfile(profile.stream, 10, ControlMode.MotionProfileArc);
         drive.bl.follow(drive.br, FollowerType.AuxOutput1);
         notifier.startPeriodic(0.01);
     }

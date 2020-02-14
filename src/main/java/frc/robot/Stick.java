@@ -23,7 +23,7 @@ public class Stick extends Joystick{
     public void readJoy() {
     // get the forward and turn axis, and convert to left and right motor inputs        
     // square the inputs for enhanced low speed control and apply deadband  
-        double forward = -this.getRawAxis(1)*.75;  
+        double forward = -this.getRawAxis(1)*0.75;  
         if (forward<deadband && forward>-deadband)forward=0;
         forward = Math.pow(forward,2)*Math.signum(forward);
         double turn =this.getRawAxis(2)*0.5;

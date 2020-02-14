@@ -70,6 +70,7 @@ public void run(double _targetPos, int vel, int acc){
     drive.br.configMotionCruiseVelocity(vel, 20);
     drive.br.configMotionSCurveStrength(4, 20);
     targetPos=_targetPos*Constants.kSensorUnitsPerInch;
+    motionTargetAngle=0;
     System.out.println("A1 "+targetPos);
     _notifier.startPeriodic(0.01);
 }

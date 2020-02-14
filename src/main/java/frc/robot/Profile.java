@@ -43,17 +43,17 @@ public class Profile {
             String s;
             int i = 0;
             size = Integer.parseInt(br.readLine());
-            time = new double[size-1];
-            vel=new double[size-1];
+            time = new double[size];
+            vel=new double[size];
             velLeft=new double[size];
             velRight=new double[size];
-            pos=new double[size-1];
-            angle=new double[size-1];
-            action1=new int[size-1];
-            action2=new int[size-1];
+            pos=new double[size];
+            angle=new double[size];
+            action1=new int[size];
+            action2=new int[size];
 
 
-            while (i <size-1) {
+            while (i <size) {
                 s="";
                 s=br.readLine();
            
@@ -71,7 +71,9 @@ public class Profile {
                 if (type==1)   
                     point.velocity = (int)(vel[i] * Constants.k_InchPerSecToVelUnits);
                 else {
-                    point.velocity = 0.0 * Constants.k_InchPerSecToVelUnits; 	
+                    point.velocity = 0.0 * Constants.k_InchPerSecToVelUnits;
+                    
+                    // aux polarity set to true -> right side gets difference, left side gets sum 
                     point.arbFeedFwd =
                         0.5* (velLeft[i] + velRight[i])*Constants.k_InchPerSecToVelUnits/Constants.maxVelUnitsPer100ms;    
                     point.auxiliaryArbFeedFwd=
@@ -89,7 +91,7 @@ public class Profile {
                     point.zeroPos = true; /* set this to true on the first point */
                 }
                 point.isLastPoint = false;
-                if ((i + 1) == size){
+                if ((i ) == size-1){
                     point.isLastPoint = true; /* set this to true on the last point  */
                  }
                  stream.Write(point);
