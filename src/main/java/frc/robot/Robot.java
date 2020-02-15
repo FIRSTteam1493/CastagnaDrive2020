@@ -5,15 +5,19 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Relay.Direction;
+import edu.wpi.first.wpilibj.Relay.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.revrobotics.CANDigitalInput;
 import org.opencv.core.Mat;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import org.opencv.videoio.VideoCapture;
+import edu.wpi.first.wpilibj.Relay;
 //import badlog.lib.BadLog;
 
 public class Robot extends TimedRobot {
+    boolean LEDrelay=false;
     static boolean runningPID = false;
     public static boolean FX = true;
     Constants constants = new Constants();
@@ -31,6 +35,8 @@ public class Robot extends TimedRobot {
     PIDRotateMagic pidRotateMagic = new PIDRotateMagic(drive,joy0);  
     PIDStraightMagic pidStraightMagic = new PIDStraightMagic(drive,joy0);
     PIDSonar pidSonar = new PIDSonar(drive,joy0);
+    Relay relayLimelight = new Relay(0);
+    Relay relayLED = new Relay(1);
     private String m_autoSelected;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
   
@@ -60,6 +66,10 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("Profile_WOF_Goal", "Profile_WOF_Goal");
 
     SmartDashboard.putData("Auto choices", m_chooser);
+    relayLimelight.setDirection(Direction.kForward);
+    relayLED.setDirection(Direction.kForward);
+    relayLED.set(Value.kOff);
+    relayLimelight.set(Value.kOff);
 /*
     log = BadLog.init("/home/lvuser/test.bag");{
     BadLog.createValue("Date", " "+Timer.getFPGATimestamp());
@@ -67,8 +77,8 @@ public class Robot extends TimedRobot {
     BadLog.createTopic("Vel_R", "rpm", ()->drive.getrvel()  );
     BadLog.createTopic("Input_L", "units", ()->drive.getLeftInput()  );
     BadLog.createTopic("Input_R", "units", ()->drive.getRightInput()  );
-    BadLog.createTopic("Curr_L", "amps", ()->drive.bl.getStatorCurrent()  );
-    BadLog.createTopic("Curr_R", "amps", ()->drive.br.getStatorCurrent()  );
+    BadLog.createTopic("CLE0 left", "units", ()->drive.getClosedLoopErrir(0)  );
+    BadLog.createTopic("CLE1 right", "units", ()->drive.getClosedLoopErrir(0)  );
         
 }
 
@@ -121,10 +131,18 @@ public class Robot extends TimedRobot {
         drive.resetEncoders();
         drive.resetGyro();
         SmartDashboard.putString("Messages", "V gains set");
+
     }
 
     else if (joy0.getButton(2)) {
 //        colorSensor.getColor();
+    if(LEDrelay){
+        relayLED.set(Value.kOff);
+        relayLimelight.set(Value.kOff);
+    }
+    else {relayLED.set(Value.kOn);
+        relayLimelight.set(Value.kOn);}
+        LEDrelay=!LEDrelay;
     }
 
     else if (joy0.getButton(3) && !joy0.getPrevButton(3) ){

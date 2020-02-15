@@ -121,7 +121,7 @@ public class Constants{
         sonar.writeGains();
         SmartDashboard.putNumber("Max RPM", maxRPM);
         SmartDashboard.putNumber("TOT goal", timeOnTargetGoal);
-        SmartDashboard.putNumber("ramptime", ramptime);
+        SmartDashboard.putNumber("ramp time", ramptime);
      }
 
     static public void readGains(){

@@ -4,9 +4,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
  
 public class Elevator{
