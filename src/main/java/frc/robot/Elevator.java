@@ -29,7 +29,8 @@ Elevator(){
     elevator.config_kP(1,.05);
     elevator.config_kD(1,0);
     elevator.configClosedLoopPeakOutput(1,0.60);
-    
+    elevator.configClearPositionOnLimitF(true,20);
+
 
 }
 
@@ -48,11 +49,6 @@ public void setPosition(){
 
     } 
 }
-}
-
-
-public int getLimitSwitch(){
-    return elevator.getSensorCollection().isFwdLimitSwitchClosed();   
 }
 
 

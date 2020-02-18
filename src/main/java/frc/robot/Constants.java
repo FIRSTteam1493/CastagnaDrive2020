@@ -37,24 +37,24 @@ public class Constants{
         }
 
         private void writeGains(){
-            SmartDashboard.putNumber("ramp time",ramptime);
-            SmartDashboard.putNumber(("kP "+key), this.kP);
-            SmartDashboard.putNumber(("kI "+key), this.kI);
-            SmartDashboard.putNumber(("kD "+key), this.kD);
-            SmartDashboard.putNumber(("kIz "+key), this.kIz);
-            SmartDashboard.putNumber(("kFF "+key), this.kFF);
-            SmartDashboard.putNumber(("MaxOut "+key), this.kMax);
-            SmartDashboard.putNumber(("MinOut "+key), this.kMin);
+            SmartDashboard.putNumber("PIDTuning/ramp time",ramptime);
+            SmartDashboard.putNumber(("PIDTuning/kP "+key), this.kP);
+            SmartDashboard.putNumber(("PIDTuning/kI "+key), this.kI);
+            SmartDashboard.putNumber(("PIDTuning/kD "+key), this.kD);
+            SmartDashboard.putNumber(("PIDTuning/kIz "+key), this.kIz);
+            SmartDashboard.putNumber(("PIDTuning/kFF "+key), this.kFF);
+            SmartDashboard.putNumber(("PIDTuning/MaxOut "+key), this.kMax);
+            SmartDashboard.putNumber(("PIDTuning/MinOut "+key), this.kMin);
         }
 
         private void readGains(){
-            this.kP=SmartDashboard.getNumber(("kP "+key),0);
-            this.kI=SmartDashboard.getNumber(("kI "+key),0);
-            this.kIz = SmartDashboard.getNumber(("kIz "+key),0);
-            this.kD = SmartDashboard.getNumber(("kD "+key),0); 
-            this.kFF = SmartDashboard.getNumber(("kFF "+key),0); 
-            this.kMin= SmartDashboard.getNumber(("MinOut "+key),0); 
-            this.kMax= SmartDashboard.getNumber(("MaxOut "+key),0);
+            this.kP=SmartDashboard.getNumber(("PIDTuning/kP "+key),0);
+            this.kI=SmartDashboard.getNumber(("PIDTuning/kI "+key),0);
+            this.kIz = SmartDashboard.getNumber(("PIDTuning/kIz "+key),0);
+            this.kD = SmartDashboard.getNumber(("PIDTuning/kD "+key),0); 
+            this.kFF = SmartDashboard.getNumber(("PIDTuning/kFF "+key),0); 
+            this.kMin= SmartDashboard.getNumber(("PIDTuning/MinOut "+key),0); 
+            this.kMax= SmartDashboard.getNumber(("PIDTuning/MaxOut "+key),0);
         }
     }           
     
@@ -119,9 +119,9 @@ public class Constants{
         other.writeGains();
         angleMP.writeGains();
         sonar.writeGains();
-        SmartDashboard.putNumber("Max RPM", maxRPM);
-        SmartDashboard.putNumber("TOT goal", timeOnTargetGoal);
-        SmartDashboard.putNumber("ramp time", ramptime);
+        SmartDashboard.putNumber("PIDTuning/Max RPM", maxRPM);
+        SmartDashboard.putNumber("PIDTuning/TOT goal", timeOnTargetGoal);
+        SmartDashboard.putNumber("PIDTuning/ramp time", ramptime);
      }
 
     static public void readGains(){
@@ -132,38 +132,38 @@ public class Constants{
         other.readGains();
         angleMP.readGains();
         sonar.readGains();
-        maxRPM = SmartDashboard.getNumber("Max RPM",0);
-        timeOnTargetGoal = SmartDashboard.getNumber("TOT goal",0);
-        ramptime = SmartDashboard.getNumber("ramptime",0);
+        maxRPM = SmartDashboard.getNumber("PIDTuning/Max RPM",0);
+        timeOnTargetGoal = SmartDashboard.getNumber("PIDTuning/TOT goal",0);
+        ramptime = SmartDashboard.getNumber("PIDTuning/ramptime",0);
     }
 
     static public void readangleRotGains(){
         angleRot.readGains();
-        maxRPM = SmartDashboard.getNumber("Max RPM",0);
-        timeOnTargetGoal = SmartDashboard.getNumber("TOT goal",0);
-        ramptime = SmartDashboard.getNumber("ramptime",0);
+        maxRPM = SmartDashboard.getNumber("PIDTuning/Max RPM",0);
+        timeOnTargetGoal = SmartDashboard.getNumber("PIDTuning/TOT goal",0);
+        ramptime = SmartDashboard.getNumber("PIDTuning/ramptime",0);
     }
 
     static public void readPosMPGains(){
         posMP.readGains();
-        maxRPM = SmartDashboard.getNumber("Max RPM",0);
-        timeOnTargetGoal = SmartDashboard.getNumber("TOT goal",0);
-        ramptime = SmartDashboard.getNumber("ramptime",0);
+        maxRPM = SmartDashboard.getNumber("PIDTuning/Max RPM",0);
+        timeOnTargetGoal = SmartDashboard.getNumber("PIDTuning/TOT goal",0);
+        ramptime = SmartDashboard.getNumber("PIDTuning/ramptime",0);
     }
 
 
     static public void readPosGains(){
         pos.readGains();
-        maxRPM = SmartDashboard.getNumber("Max RPM",0);
-        timeOnTargetGoal = SmartDashboard.getNumber("TOT goal",0);
-        ramptime = SmartDashboard.getNumber("ramptime",0);
+        maxRPM = SmartDashboard.getNumber("PIDTuning/Max RPM",0);
+        timeOnTargetGoal = SmartDashboard.getNumber("PIDTuning/TOT goal",0);
+        ramptime = SmartDashboard.getNumber("PIDTuning/ramptime",0);
     }
     
     static public void readOtherGains(){
         other.readGains();
-        maxRPM = SmartDashboard.getNumber("Max RPM",0);
-        timeOnTargetGoal = SmartDashboard.getNumber("TOT goal",0);
-        ramptime = SmartDashboard.getNumber("ramptime",0);
+        maxRPM = SmartDashboard.getNumber("PIDTuning/Max RPM",0);
+        timeOnTargetGoal = SmartDashboard.getNumber("PIDTuning/TOT goal",0);
+        ramptime = SmartDashboard.getNumber("PIDTuning/ramptime",0);
     }
     }
 

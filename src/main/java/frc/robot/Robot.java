@@ -26,9 +26,10 @@ public class Robot extends TimedRobot {
     GripPipeline grip = new GripPipeline();
     Sonar sonar = new Sonar(1);
  //   SonarDigital sonarDigital = new SonarDigital();
-    Stick joy0 = new Stick(0);
+    Stick joy0 = new Stick(0), joy1=new Stick(1);
     FalconDriveCTRE drive = new FalconDriveCTRE();  
     Elevator elevator = new Elevator();
+    Arm arm = new Arm();
     MotionProfileCTRE mpctre = new MotionProfileCTRE(drive, joy0);
     Limelight limelight = new Limelight(joy0, drive, mpctre);
     PIDRotate pidRotate = new PIDRotate(drive,joy0);  
@@ -114,16 +115,14 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
 
     joy0.readStick();
+    joy1.readStick();
+
     if (elevator.calibrated==0 ) {
         System.out.println("Start calibtation0");
-
         elevator.calibrate();}
-// write position and velocity to smartdashboard         
 
-    //  Choose a  non-drive actions
-    // Button 1 - set motor parameters
-    //  Button 2 - Read Color Sensor;
-    // Button 3 - process vision pipeline
+
+// stick 0 actions        
 
     if(joy0.getButton(1) && !joy0.getPrevButton(1) ){
         Constants.readGains();
@@ -131,38 +130,26 @@ public class Robot extends TimedRobot {
         drive.resetEncoders();
         drive.resetGyro();
         SmartDashboard.putString("Messages", "V gains set");
-
     }
 
-    else if (joy0.getButton(2)) {
-//        colorSensor.getColor();
-    if(LEDrelay){
-        relayLED.set(Value.kOff);
-        relayLimelight.set(Value.kOff);
-    }
-    else {relayLED.set(Value.kOn);
-        relayLimelight.set(Value.kOn);}
-        LEDrelay=!LEDrelay;
-    }
+    else if (joy0.getButton(2)&& !joy0.getPrevButton(2)) {
+//  colorSensor.getColor();
+        if(LEDrelay){
+            relayLED.set(Value.kOff);
+            relayLimelight.set(Value.kOff);
+         }
+        else {
+            relayLED.set(Value.kOn);
+            relayLimelight.set(Value.kOn);}
+            LEDrelay=!LEDrelay;
+        }
 
     else if (joy0.getButton(3) && !joy0.getPrevButton(3) ){
         camera.read(frame);
         grip.process(frame);
     }
-    else if (joy0.getButton(9) && !joy0.getPrevButton((9)) ){
-        if(elevator.calibrated==2) elevator.setPosition();
-    }
 
-
-
-     // Choose a drive actions  - either run a PID or drive from stick   
-    // Button 5 - run Rotate PID
-    // Button 6 - run Straight PID
-    // Button 7 - position control 
-    // Button 8 - run ctre motionProfile
-
- //  pidRotateMagic.run(90.0);
-    if (joy0.getButton(5) &&!joy0.getPrevButton(5) ) {
+    else if (joy0.getButton(5) &&!joy0.getPrevButton(5) ) {
         m_autoSelected = m_chooser.getSelected();
         switch (m_autoSelected) {
             case "Rotate90":
@@ -170,7 +157,7 @@ public class Robot extends TimedRobot {
             break;
             case "Rotate180":
                 pidRotate.run(90.0,true);
-                break;
+            break;
             case "Straight120_48ips":
                 pidStraightMagic.run(120.0,3000,6000);    
             break;                
@@ -179,37 +166,44 @@ public class Robot extends TimedRobot {
             break;               
             case "Profile_straight60_48":
                 mpctre.runProfile(straight60_48); 
-             break;                           
+            break;                           
             case "Profile_straightarc60_48":
                 mpctre.runProfile(straightarc60_48); 
-             break;                           
+            break;                           
             case "Profile_straightarc120_48":
-               mpctre.runProfile(straightarc120_48); 
+                mpctre.runProfile(straightarc120_48); 
             break;                           
             case "Profile_straightarc120_96":
                 mpctre.runProfile(straightarc120_96);    
             break;                           
             case "Profile_WOF_Goal":
                 mpctre.runProfile(wof_goal);    
-            break;                           
-
+            break;                          
             default:
               // Put default auto code here
-              break;
-          }
-
+          break;
+      }
     }
+    if (joy0.getButton(7)  && !joy0.getPrevButton(7) && !runningPID){}
+    //             limelight.driveStraightToTarget();
+ 
 
 
-// run lightlight generated profile
-    else if (joy0.getButton(7)  && !joy0.getPrevButton(7) && !runningPID){}
-   //             limelight.driveStraightToTarget();
+// stick 1 actions    
+    if(joy1.getButton(1)) arm.setPosition(1);
+    else if(joy1.getButton(2)) arm.setPosition(2);
+    else if(joy1.getButton(3)) arm.setPosition(2);
+    else if(joy1.getButton(4)) arm.setPosition(2);
+    else if (joy0.getButton(9) && !joy0.getPrevButton((9)) )
+        if(elevator.calibrated==2) elevator.setPosition();
+
 
  
 // else drive manually         
     if(!runningPID) 
         drive.setMotors(joy0.getLeft(),joy0.getRight(),ControlMode.Velocity);
     
+    if(joy1.isPushed())arm.manualSetPosition(joy1.forward);
      
     
     drive.writeEncoderData();

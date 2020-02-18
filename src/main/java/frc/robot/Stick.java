@@ -2,10 +2,12 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class Stick extends Joystick{
-    private double leftinput=0,rightinput=0;
+    public double leftinput=0,rightinput=0, forward,turn;
     private boolean[] _button,button;
     int numButtons;
     double deadband = 0.05;
+    
+
 
     Stick(int portnum){
         super(portnum);       
@@ -13,6 +15,7 @@ public class Stick extends Joystick{
         numButtons=10;
         _button = new boolean[numButtons];
         button = new boolean[numButtons];
+
     }
 
     public void readStick(){
@@ -23,10 +26,10 @@ public class Stick extends Joystick{
     public void readJoy() {
     // get the forward and turn axis, and convert to left and right motor inputs        
     // square the inputs for enhanced low speed control and apply deadband  
-        double forward = -this.getRawAxis(1)*0.75;  
+        forward = -this.getRawAxis(1);  
         if (forward<deadband && forward>-deadband)forward=0;
         forward = Math.pow(forward,2)*Math.signum(forward);
-        double turn =this.getRawAxis(2)*0.5;
+        turn =this.getRawAxis(2)*0.5;
         if (turn<deadband && turn>-deadband)turn=0;
         turn = Math.pow(turn,2)*Math.signum(turn);
 
@@ -70,8 +73,8 @@ public class Stick extends Joystick{
 
     public boolean isPushed(){
         readStick();
-        boolean leftpush = (Math.abs(this.leftinput)>0.1) ; 
-        boolean rightpush = (Math.abs(this.rightinput)>0.1) ; 
+        boolean leftpush = (Math.abs(this.leftinput)>0.05) ; 
+        boolean rightpush = (Math.abs(this.rightinput)>0.05) ; 
         return ((leftpush||rightpush));
     }
 

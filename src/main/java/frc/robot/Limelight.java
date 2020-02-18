@@ -1,6 +1,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.io.IOException;
@@ -25,13 +27,13 @@ public class Limelight {
     Limelight(Stick stick, FalconDriveCTRE _drive, MotionProfileCTRE _mpctre) {
         drive = _drive;
         mpctre = _mpctre;
-
-        SmartDashboard.putNumber("STEER_K", STEER_K);
-        SmartDashboard.putNumber("STEER_D", STEER_D);
-        SmartDashboard.putNumber("DRIVE_K", DRIVE_K);
-        SmartDashboard.putNumber("DRIVE_D", DRIVE_D);
-        SmartDashboard.putNumber("DESIRED AREA", DESIRED_TARGET_AREA);
-        SmartDashboard.putNumber("MAX_DRIVE", MAX_DRIVE);
+  
+        SmartDashboard.putNumber("Limelight/STEER_K", STEER_K);
+        SmartDashboard.putNumber("Limelight/STEER_D", STEER_D);
+        SmartDashboard.putNumber("Limelight/DRIVE_K", DRIVE_K);
+        SmartDashboard.putNumber("Limelight/DRIVE_D", DRIVE_D);
+        SmartDashboard.putNumber("Limelight/DESIRED AREA", DESIRED_TARGET_AREA);
+        SmartDashboard.putNumber("Limelight/MAX_DRIVE", MAX_DRIVE);
 
         class StraightToTarget implements java.lang.Runnable {
             double measuredDist = ta, errorDist = ta, preverrorDist = 0, derrorDist = 0;
@@ -86,19 +88,19 @@ public class Limelight {
         tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
         ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
         ta = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ta").getDouble(0);
-        SmartDashboard.putNumber("tv", tv);
-        SmartDashboard.putNumber("tx", tx);
-        SmartDashboard.putNumber("ta", ta);
+        SmartDashboard.putNumber("Limelight/tv", tv);
+        SmartDashboard.putNumber("Limelight/tx", tx);
+        SmartDashboard.putNumber("Limelight/ta", ta);
         hasTarget = true;
     }
 
     public void driveStraightToTarget() {
-        STEER_K = SmartDashboard.getNumber("STEER_K", 0);
-        DRIVE_K = SmartDashboard.getNumber("DRIVE_K", 0);
-        STEER_D = SmartDashboard.getNumber("STEER_D", 0);
-        DRIVE_D = SmartDashboard.getNumber("DRIVE_D", 0);
-        DESIRED_TARGET_AREA = SmartDashboard.getNumber("DESIRED AREA", 0);
-        MAX_DRIVE = SmartDashboard.getNumber("MAX_DRIVE", 0);
+        STEER_K = SmartDashboard.getNumber("Limelight/STEER_K", 0);
+        DRIVE_K = SmartDashboard.getNumber("Limelight/DRIVE_K", 0);
+        STEER_D = SmartDashboard.getNumber("Limelight/STEER_D", 0);
+        DRIVE_D = SmartDashboard.getNumber("Limelight/DRIVE_D", 0);
+        DESIRED_TARGET_AREA = SmartDashboard.getNumber("Limelight/DESIRED AREA", 0);
+        MAX_DRIVE = SmartDashboard.getNumber("Limelight/MAX_DRIVE", 0);
 
         if (tv < 1.0) {
             hasTarget = false;
