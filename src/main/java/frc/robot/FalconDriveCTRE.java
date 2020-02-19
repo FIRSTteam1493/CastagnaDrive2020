@@ -82,7 +82,7 @@ public void setMotors(double leftinput, double rightinput, ControlMode mode){
     // velocity setpoint is in units/100ms
     double conversion=1.0;
     if (mode==ControlMode.Velocity) 
-        conversion=Constants.maxRPM;
+        conversion=Constants.maxVelUnitsPer100ms;
     if(mode==ControlMode.Position)conversion= Constants.kSensorUnitsPerRotation*4; // convert to sensor_frunningunits
     leftIn=leftinput*conversion;
     rightIn=rightinput*conversion;
@@ -388,7 +388,26 @@ public void setupTalonMotionMagicStraight(){
     bl.configVoltageCompSaturation(12);
     fr.configVoltageCompSaturation(12);
     bl.configVoltageCompSaturation(12);
+}
 
+
+
+//******************************************************************
+//*    Set Talon Parameters for Bump Sensor                        *
+//*     reset parameters that might have been changed in PID mode  *
+//******************************************************************   
+public void setupTalonBump(){
+    setupTalonTeleop();
+    br.configRemoteFeedbackFilter(gyro.getDeviceID(),
+    RemoteSensorSource.Pigeon_Yaw, 1,20);  
+    br.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor1, 1, 0);
+    br.configSelectedFeedbackCoefficient(1.0, 1, 20);
+    // set left output = PID0+PID1, right output PID0-PID1   
+    br.configAuxPIDPolarity(true, 20);
+
+    setPIDGains(Constants.slot_angleMP,Constants.angleMP);
+    br.selectProfileSlot(Constants.slot_vel, 0);
+    br.selectProfileSlot(Constants.slot_angleMP, 1);
 }
 
 }

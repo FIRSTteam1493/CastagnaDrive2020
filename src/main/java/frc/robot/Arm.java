@@ -5,13 +5,19 @@ import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
  
 public class Arm{
-    TalonFX armMotor = new TalonFX(6);
+    private TalonFX armMotor = new TalonFX(6);
     private double maxFF=0.1;
     private int topPos = 80000, intakePos=30000,scorePos=10000, floorPos = 0;
-    private int floorFF,topFF, intakeFF,scoreFF;
+    private int floorFF,topFF, intakeFF,scoreFF;    
+    private CANSparkMax shooterMotor = new CANSparkMax(3, MotorType.kBrushless);
 
 Arm(){
 
@@ -27,7 +33,6 @@ Arm(){
     
     armMotor.config_kP(0,.15);
     armMotor.config_kD(0,0);
-
     armMotor.configClosedLoopPeakOutput(0, .5);
 
     
@@ -37,6 +42,10 @@ Arm(){
 
     armMotor.configClearPositionOnLimitF(true,20);
 
+    shooterMotor.restoreFactoryDefaults();
+    shooterMotor.setIdleMode(IdleMode.kBrake);
+
+    writeArmData();
 
 }
 
@@ -69,6 +78,25 @@ public void manualSetPosition(double stickInput){
     if (armMotor.getSensorCollection().isRevLimitSwitchClosed() == 1) armMotor.setSelectedSensorPosition(topPos);
 }
 
+public void shooterIn(){
+    shooterMotor.set(-1);
+}
+
+public void shooterOut(){
+    shooterMotor.set(1);
+}
+
+public void shooterStop(){
+    shooterMotor.set(0);
+}
+
+public void writeArmData(){
+    SmartDashboard.putNumber("Arm/Arm Pos",armMotor.getSelectedSensorPosition(0));
+    SmartDashboard.putNumber("Arm/Arm Set",armMotor.getClosedLoopTarget(0));
+    SmartDashboard.putNumber("Arm/Arm Error",armMotor.getClosedLoopError(0));
+    SmartDashboard.putNumber("Arm/Arm Output",armMotor.getMotorOutputPercent());
+
+}
 
 
 private double getFF(int currentPos){
