@@ -36,6 +36,8 @@ public class Robot extends TimedRobot {
     PIDRotateMagic pidRotateMagic = new PIDRotateMagic(drive,joy0);  
     PIDStraightMagic pidStraightMagic = new PIDStraightMagic(drive,joy0);
     PIDSonar pidSonar = new PIDSonar(drive,joy0);
+    BumpSensor bump = new BumpSensor(drive, joy0);
+    LEDdriver led = new LEDdriver();
     Relay relayLimelight = new Relay(0);
     Relay relayLED = new Relay(1);
     private String m_autoSelected;
@@ -45,7 +47,6 @@ public class Robot extends TimedRobot {
     CANDigitalInput reverseLimit;
 //    ColorSensor colorSensor = new ColorSensor();
     Mat frame = new Mat();
-    int counter=0;
 
     Profile straight60_48,straightarc60_48, straightarc120_48, straightarc120_96, wof_goal;
 
@@ -65,12 +66,14 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("Profile_straightarc120_96", "Profile_straightarc120_96");
     m_chooser.addOption("Profile_outback_96", "Profile_outback_96");
     m_chooser.addOption("Profile_WOF_Goal", "Profile_WOF_Goal");
+    m_chooser.addOption("Other", "Other");
 
     SmartDashboard.putData("Auto choices", m_chooser);
     relayLimelight.setDirection(Direction.kForward);
     relayLED.setDirection(Direction.kForward);
     relayLED.set(Value.kOff);
     relayLimelight.set(Value.kOff);
+    led.sendData(0); // set LED's red
 /*
     log = BadLog.init("/home/lvuser/test.bag");{
     BadLog.createValue("Date", " "+Timer.getFPGATimestamp());
@@ -137,12 +140,15 @@ public class Robot extends TimedRobot {
         if(LEDrelay){
             relayLED.set(Value.kOff);
             relayLimelight.set(Value.kOff);
+            led.sendData(0);
          }
         else {
             relayLED.set(Value.kOn);
-            relayLimelight.set(Value.kOn);}
-            LEDrelay=!LEDrelay;
-        }
+            relayLimelight.set(Value.kOn);
+            led.sendData(1);
+            }
+        LEDrelay=!LEDrelay;
+    }
 
     else if (joy0.getButton(3) && !joy0.getPrevButton(3) ){
         camera.read(frame);
@@ -178,7 +184,10 @@ public class Robot extends TimedRobot {
             break;                           
             case "Profile_WOF_Goal":
                 mpctre.runProfile(wof_goal);    
-            break;                          
+            break;                         
+            case "Other":
+            bump.run(36);   
+        break;                           
             default:
               // Put default auto code here
           break;
@@ -194,7 +203,12 @@ public class Robot extends TimedRobot {
     else if(joy1.getButton(2)) arm.setPosition(2);
     else if(joy1.getButton(3)) arm.setPosition(2);
     else if(joy1.getButton(4)) arm.setPosition(2);
-    else if (joy0.getButton(9) && !joy0.getPrevButton((9)) )
+    
+    if(joy1.getButton(5)) arm.shooterIn();
+    else if (joy1.getButton(6)) arm.shooterOut();
+    else  arm.shooterStop();
+
+    if (joy0.getButton(9) && !joy0.getPrevButton((9)) )   
         if(elevator.calibrated==2) elevator.setPosition();
 
 
@@ -202,13 +216,15 @@ public class Robot extends TimedRobot {
 // else drive manually         
     if(!runningPID) 
         drive.setMotors(joy0.getLeft(),joy0.getRight(),ControlMode.Velocity);
+//        drive.setMotors(joy0.getLeft(),joy0.getRight(),ControlMode.PercentOutput);
     
     if(joy1.isPushed())arm.manualSetPosition(joy1.forward);
      
     
     drive.writeEncoderData();
     limelight.getLimelightData();
-    counter++;
+    arm.writeArmData();
+
 //    log.updateTopics();
 //    log.log();
 
