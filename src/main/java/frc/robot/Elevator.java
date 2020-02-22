@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 public class Elevator{
     TalonFX elevator = new TalonFX(5);
     private int topPos = 460000;
+    private int hangPos = 360000; 
     private int botPos = 0;
     private int setPoint=0;
     int  calibrated =0;
@@ -49,6 +50,26 @@ public void setPosition(){
 
     } 
 }
+}
+
+
+//  bring elevator to top
+public void up(){
+    if(calibrated==2){
+        setPoint=topPos;
+        elevator.selectProfileSlot(0, 0);
+        elevator.set(ControlMode.Position, setPoint);
+    }
+}
+
+//  bring elevator down 1 level
+public void down(){
+    if(calibrated==2){
+        if (setPoint==topPos) setPoint=hangPos;
+        else setPoint=botPos;
+        elevator.selectProfileSlot(1, 0);
+        elevator.set(ControlMode.Position, setPoint);
+    }
 }
 
 

@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.Relay;
 public class Robot extends TimedRobot {
     boolean LEDrelay=false;
     static boolean runningPID = false;
+    static boolean turbo = false;
     public static boolean FX = true;
     Constants constants = new Constants();
 //    BadLog log;
@@ -30,7 +31,7 @@ public class Robot extends TimedRobot {
     FalconDriveCTRE drive = new FalconDriveCTRE();  
     Elevator elevator = new Elevator();
     Arm arm = new Arm();
-    MotionProfileCTRE mpctre = new MotionProfileCTRE(drive, joy0);
+    MotionProfileCTRE mpctre = new MotionProfileCTRE(drive, joy0, arm);
     Limelight limelight = new Limelight(joy0, drive, mpctre);
     PIDRotate pidRotate = new PIDRotate(drive,joy0);  
     PIDRotateMagic pidRotateMagic = new PIDRotateMagic(drive,joy0);  
@@ -38,7 +39,7 @@ public class Robot extends TimedRobot {
     PIDSonar pidSonar = new PIDSonar(drive,joy0);
     BumpSensor bump = new BumpSensor(drive, joy0);
     LEDdriver led = new LEDdriver();
-    Relay relayLimelight = new Relay(0);
+    Relay relayLimelight = new Relay(3);
     Relay relayLED = new Relay(1);
     private String m_autoSelected;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
@@ -48,12 +49,13 @@ public class Robot extends TimedRobot {
 //    ColorSensor colorSensor = new ColorSensor();
     Mat frame = new Mat();
 
-    Profile straight60_48,straightarc60_48, straightarc120_48, straightarc120_96, wof_goal;
+    Profile straight60_48,straightarc60_48, straightarc120_48, straightarc120_96, wof_goal,straight83;
 
   @Override
   public void robotInit() {
     SmartDashboard.putString("Messages", "Hello");
     Constants.writeGains();
+    Constants.writeDriveParams();
     camera = new VideoCapture(0);
 
     m_chooser.setDefaultOption("Rotate90", "Rotate90");
@@ -90,6 +92,7 @@ public class Robot extends TimedRobot {
 */
     straight60_48 = new Profile("/home/lvuser/profile_straight60_48.profile",2);   
     straightarc60_48 = new Profile("/home/lvuser/profile_straightArc60_48.profile",2);   
+    straight83 = new Profile("/home/lvuser/straight83.profile",2);   
  //   straightarc120_48 = new Profile("/home/lvuser/profile_straightArc120_48.profile",2);   
 //    straightarc120_96 = new Profile("/home/lvuser/profile_straightArc120_96.profile",2);   
 //    wof_goal = new Profile("/home/lvuser/profile_wof_goal.profile",2);   
@@ -117,8 +120,8 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    joy0.readStick();
-    joy1.readStick();
+    joy0.readStick(true);
+    joy1.readStick(false);
 
     if (elevator.calibrated==0 ) {
         System.out.println("Start calibtation0");
@@ -132,7 +135,7 @@ public class Robot extends TimedRobot {
         drive.setVelocityGains();
         drive.resetEncoders();
         drive.resetGyro();
-        SmartDashboard.putString("Messages", "V gains set");
+        SmartDashboard.putString("Messages", "Gains/Params set");
     }
 
     else if (joy0.getButton(2)&& !joy0.getPrevButton(2)) {
@@ -151,9 +154,15 @@ public class Robot extends TimedRobot {
     }
 
     else if (joy0.getButton(3) && !joy0.getPrevButton(3) ){
-        camera.read(frame);
-        grip.process(frame);
+        // camera.read(frame);
+        // grip.process(frame);
     }
+    
+    //read drive paramaters
+    else if (joy0.getButton(4) && !joy0.getPrevButton(4) ){
+            Constants.readDriveParams();
+            drive.setRampTime(Constants.ramptime);
+            }
 
     else if (joy0.getButton(5) &&!joy0.getPrevButton(5) ) {
         m_autoSelected = m_chooser.getSelected();
@@ -186,7 +195,7 @@ public class Robot extends TimedRobot {
                 mpctre.runProfile(wof_goal);    
             break;                         
             case "Other":
-            bump.run(36);   
+            mpctre.runProfile(straight83);    
         break;                           
             default:
               // Put default auto code here
@@ -195,21 +204,27 @@ public class Robot extends TimedRobot {
     }
     if (joy0.getButton(7)  && !joy0.getPrevButton(7) && !runningPID){}
     //             limelight.driveStraightToTarget();
+
+    if (joy0.getButton(8))  turbo=true;
+    else turbo=false;
  
 
-
-// stick 1 actions    
+// *************************************
+// ***    stick 1 actions            ***
+// *************************************    
     if(joy1.getButton(1)) arm.setPosition(1);
     else if(joy1.getButton(2)) arm.setPosition(2);
-    else if(joy1.getButton(3)) arm.setPosition(2);
-    else if(joy1.getButton(4)) arm.setPosition(2);
+    else if(joy1.getButton(3)) arm.setPosition(3);
+    else if(joy1.getButton(4)) arm.setPosition(4);
     
     if(joy1.getButton(5)) arm.shooterIn();
     else if (joy1.getButton(6)) arm.shooterOut();
-    else  arm.shooterStop();
+    else if(!runningPID)  arm.shooterStop();
 
-    if (joy0.getButton(9) && !joy0.getPrevButton((9)) )   
-        if(elevator.calibrated==2) elevator.setPosition();
+    if (joy1.getButton(8) && !joy1.getPrevButton(8)) arm.toggleBrake();  
+
+    if (joy1.getButton(9) && !joy1.getPrevButton(9) )  elevator.down();
+    else if (joy1.getButton(10) && !joy1.getPrevButton(10) )  elevator.up();        
 
 
  
@@ -224,6 +239,7 @@ public class Robot extends TimedRobot {
     drive.writeEncoderData();
     limelight.getLimelightData();
     arm.writeArmData();
+    
 
 //    log.updateTopics();
 //    log.log();

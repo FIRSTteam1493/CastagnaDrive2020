@@ -6,27 +6,54 @@ public class Stick extends Joystick{
     private boolean[] _button,button;
     int numButtons;
     double deadband = 0.05;
-    
-
+    double deltaXMax=0.015,xPrev = 0;
+    double forwardSF=0.7,turnSF=0.5;
 
     Stick(int portnum){
         super(portnum);       
         numButtons = this.getButtonCount();  // ??? This didn't work on switch joystick
-        numButtons=10;
+        numButtons=11;
         _button = new boolean[numButtons];
         button = new boolean[numButtons];
 
     }
+    public double getRampedInput() {
+        double x,y;
+        x = -this.getRawAxis(1);
+        double deltaX = x - xPrev;
+        if (this.getRawButton(1)){ y = x;}
+        else{
+    
+        if (deltaX > deltaXMax && x > 0){
+            deltaX = deltaXMax;
+        }
+        else if (deltaX < -deltaXMax && x < 0) {
+            deltaX = -deltaXMax;
+        }
+        else if(deltaX == 0){
+            y = x;
+        }
+        y = xPrev + deltaX;
+        xPrev = y;
+     }
+     return(y);
 
-    public void readStick(){
-        readJoy();
+}
+    public void readStick(boolean ramp){
+        if (ramp) readDriverJoy();
+        else readOperatorJoy();
         readButtons();
     }
 
-    public void readJoy() {
+
+
+    public void readDriverJoy() {
     // get the forward and turn axis, and convert to left and right motor inputs        
     // square the inputs for enhanced low speed control and apply deadband  
-        forward = -this.getRawAxis(1);  
+        double sf=Constants.forwardSF;
+        if(Robot.turbo)sf=1;
+        forward=getRampedInput()*sf;
+//        else forward = -this.getRawAxis(1)*sf;  
         if (forward<deadband && forward>-deadband)forward=0;
         forward = Math.pow(forward,2)*Math.signum(forward);
         turn =this.getRawAxis(2)*0.5;
@@ -40,6 +67,15 @@ public class Stick extends Joystick{
         leftinput=limit(leftinput);
         rightinput=limit(rightinput);
     }
+
+    public void readOperatorJoy() {
+
+            forward = -this.getRawAxis(1);           
+            if (forward<deadband && forward>-deadband)forward=0;   
+            turn =0;
+        }
+    
+
 
     public void readButtons(){
     // read the buttons
@@ -72,7 +108,7 @@ public class Stick extends Joystick{
     }
 
     public boolean isPushed(){
-        readStick();
+        readStick(false);
         boolean leftpush = (Math.abs(this.leftinput)>0.05) ; 
         boolean rightpush = (Math.abs(this.rightinput)>0.05) ; 
         return ((leftpush||rightpush));

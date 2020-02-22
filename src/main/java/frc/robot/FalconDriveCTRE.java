@@ -2,7 +2,6 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
@@ -15,6 +14,8 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.SensorTerm;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -34,7 +35,6 @@ public class FalconDriveCTRE{
     TalonSRX fr = new TalonSRX(3);
 */    
 
-    double ramptime = 0.0;
     double leftIn=0,rightIn=0;
     FeedbackDevice fbd;
     PigeonIMU gyro;
@@ -61,11 +61,10 @@ public class FalconDriveCTRE{
 
 public void setRampTime(double ramptime){
 // set ramp time in seconds
-    bl.configOpenloopRamp(ramptime);
-    fl.configOpenloopRamp(ramptime);
-    br.configOpenloopRamp(ramptime);
-    fr.configOpenloopRamp(ramptime);
-    SmartDashboard.putNumber("ramp time", ramptime);
+    bl.configOpenloopRamp(Constants.ramptime);
+    fl.configOpenloopRamp(Constants.ramptime);
+    br.configOpenloopRamp(Constants.ramptime);
+    fr.configOpenloopRamp(Constants.ramptime);
 }
 
 // set motor mode to brake or coast
@@ -150,6 +149,9 @@ public void writeEncoderData(){
     SmartDashboard.putNumber("Right Vel RPM", getrvel()*600/Constants.kSensorUnitsPerRotation );
     SmartDashboard.putNumber("Angle", getAngle() );
     SmartDashboard.putNumber("CLE_Right", br.getClosedLoopError(0));
+    SmartDashboard.putNumber("FL Pos", fl.getSelectedSensorPosition(0));
+    SmartDashboard.putNumber("FR Pos", fr.getSelectedSensorPosition(0));
+
   //  System.out.println(br.getClosedLoopError(0) + "  " + br.getClosedLoopTarget() + "   " + br.getSelectedSensorVelocity());
 
 }
@@ -169,7 +171,6 @@ public void setPIDGains(int slot, Constants.Gains gains){
     br.config_IntegralZone(slot, (int)gains.kIz);
     br.config_kF(slot, gains.kFF);
     br.configClosedLoopPeakOutput(slot,gains.kMax);    
-    setRampTime(0);
    }
 
    public void setVelocityGains(){
@@ -206,10 +207,13 @@ fr.setInverted(true);
 bl.setInverted(false);
 fl.setInverted(false);
 
-
+bl.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+br.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+fl.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+fr.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 // set the sensor phase 
-bl.setSensorPhase(true);
-br.setSensorPhase(false);
+//bl.setSensorPhase(true);
+//br.setSensorPhase(false);
 
 // front follows back
 fr.follow(br);
@@ -240,7 +244,7 @@ setPIDGains(Constants.slot_angleMP,Constants.other);
 br.selectProfileSlot(Constants.slot_vel, 0);
 bl.selectProfileSlot(Constants.slot_vel, 0);
 
-
+setRampTime((Constants.ramptime));
 }
    
 
@@ -251,6 +255,7 @@ bl.selectProfileSlot(Constants.slot_vel, 0);
 //*************************************************    
    public void setupTalonMP(){
     setupTalonMotionMagicStraight();
+    setRampTime((0.0));
    }
 
 
@@ -275,7 +280,7 @@ public void setupTalonMotionMagicRotate(){
 
     // remote sensor 1 is the left side encoder    
     br.configRemoteFeedbackFilter(bl.getDeviceID(),
-            RemoteSensorSource.TalonSRX_SelectedSensor,1,20);
+            RemoteSensorSource.TalonFX_SelectedSensor,1,20);
 
 
 	// Use the pigeon in remotesensor0 for main pid 0
@@ -292,7 +297,7 @@ public void setupTalonMotionMagicRotate(){
 
 
     // set left output = PID0+PID1, left output PID0-PID1   
-    br.configAuxPIDPolarity(true, 20);
+    br.configAuxPIDPolarity(false, 20);
     
     br.configMotionAcceleration(700, 20);
     br.configMotionCruiseVelocity(350, 20);
@@ -312,6 +317,7 @@ public void setupTalonMotionMagicRotate(){
 //*     right talon is master                                             *
 //*************************************************************************    
 public void setupTalonMotionMagicStraight(){
+    setRampTime((0.0));
     br.setInverted(true);
     fr.setInverted(true);
     bl.setInverted(false);
@@ -323,17 +329,19 @@ public void setupTalonMotionMagicStraight(){
     
     // remote sensor 0 is the left side encoder    
     br.configRemoteFeedbackFilter(bl.getDeviceID(),
-            RemoteSensorSource.TalonSRX_SelectedSensor,0,20);
+            RemoteSensorSource.TalonFX_SelectedSensor,0,20);
 
     // remote sensor 1 is the gyro         
     br.configRemoteFeedbackFilter(gyro.getDeviceID(),
         RemoteSensorSource.Pigeon_Yaw, 1,20);  
         
 
-    // primary PID 0 uses the sum of the encoder values 
-    br.configSensorTerm(SensorTerm.Sum0, FeedbackDevice.RemoteSensor0, 20);
-	br.configSensorTerm(SensorTerm.Sum1, fbd, 20);
-	br.configSelectedFeedbackSensor(FeedbackDevice.SensorSum,0, 20);
+    // primary PID 0 uses the sum of the encoder values, but right (master) in inverted
+    // use difference:   r - l, but right is inverted so its really -r - l
+    // since right is inverted, the difference is inverted and we get r+l
+    br.configSensorTerm(SensorTerm.Diff0, fbd, 20);
+    br.configSensorTerm(SensorTerm.Diff1, FeedbackDevice.RemoteSensor0, 20);
+    br.configSelectedFeedbackSensor(TalonFXFeedbackDevice.SensorDifference,0, 20);
 
     // multiply the sensor sun by 1/2 
     br.configSelectedFeedbackCoefficient(0.5, 0, 20);
@@ -342,7 +350,7 @@ public void setupTalonMotionMagicStraight(){
 	br.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor1, 1, 0);
     br.configSelectedFeedbackCoefficient(1.0, 1, 20);
     // set left output = PID0+PID1, right output PID0-PID1   
-    br.configAuxPIDPolarity(true, 20);
+    br.configAuxPIDPolarity(false, 20);
     
     br.configMotionAcceleration(12000, 20);
     br.configMotionCruiseVelocity(6000, 20);
@@ -366,6 +374,7 @@ public void setupTalonMotionMagicStraight(){
 //*     reset parameters that might have been changed in PID mode  *
 //******************************************************************   
    public void setupTalonTeleop(){
+    setRampTime((Constants.ramptime));
      // use integrated sensor for primary PID 0  
     br.configSelectedFeedbackSensor(fbd, 0, 20);
     bl.configSelectedFeedbackSensor(fbd, 0, 20);
@@ -397,6 +406,7 @@ public void setupTalonMotionMagicStraight(){
 //*     reset parameters that might have been changed in PID mode  *
 //******************************************************************   
 public void setupTalonBump(){
+    setRampTime((0.0));
     setupTalonTeleop();
     br.configRemoteFeedbackFilter(gyro.getDeviceID(),
     RemoteSensorSource.Pigeon_Yaw, 1,20);  

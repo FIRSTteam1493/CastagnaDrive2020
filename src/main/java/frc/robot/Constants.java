@@ -20,7 +20,8 @@ public class Constants{
     static double kSensorUnitsPerRotation,wheelDiam,wheelCircum;
     static double kSensorUnitsPerInch,k_InchPerSecToVelUnits,k_gyroUnitsPerDegree;
     static int slot_vel,slot_pos, slot_rotate, slot_angleMP;
-    static double maxRPM,maxVelUnitsPer100ms,ramptime,timeOnTargetGoal;
+    static double maxRPM,maxVelUnitsPer100ms,ramptime,turnSF,forwardSF,
+            oneWayRampTime,timeOnTargetGoal;
 
 // Inner class to hold groups of PIDF gains 
 // kP  KI,  kD,   kIz,   kFF,   kMin,   kMax,   Key for smartdash;
@@ -37,7 +38,6 @@ public class Constants{
         }
 
         private void writeGains(){
-            SmartDashboard.putNumber("PIDTuning/ramp time",ramptime);
             SmartDashboard.putNumber(("PIDTuning/kP "+key), this.kP);
             SmartDashboard.putNumber(("PIDTuning/kI "+key), this.kI);
             SmartDashboard.putNumber(("PIDTuning/kD "+key), this.kD);
@@ -68,10 +68,10 @@ public class Constants{
             k_InchPerSecToVelUnits=(kSensorUnitsPerInch/10);  //  113.6276
             maxRPM=18000;  //  (actually max vel units/100ms)
 //            maxVelUnitsPer100ms=468;  // ,measured on blocks  (encoder units/100ms)
-            maxVelUnitsPer100ms=18000;
+            maxVelUnitsPer100ms=14000;
             // kP  KI,  kD,   kIz,   kFF,   kMin,   kMax,   Key for smartdash;
-            vel=new Gains(0.000050, 0.0, 0.0, 20, 0.0593, -1, 1, "vel");  // 1023/468
-            posMP=new Gains(0.034900, 0, 1, 0,  0.0593, -1, 1, "posMP");
+            vel=new Gains(0.0050, 0.0, 0.0, 20, 0.05, -1, 1, "vel");  // 1023/468
+            posMP=new Gains(0.2, 0, 0.7, 0,  0.05, -1, 1, "posMP");
             pos=new Gains(0.034900, 0, 0, 0, 0.0593, -1, 1, "pos");
             angleRot=new Gains(0.0175, 0.0, 0.170, 0, 0.0, -1.0, 1.0, "rotate");
             angleMP=new Gains(0.026, 0, 0, 0, 0, -0.5, 0.5, "angleMP");
@@ -87,7 +87,7 @@ public class Constants{
             k_InchPerSecToVelUnits=(kSensorUnitsPerInch/10);  // 3
             maxRPM=18000;  //  (actually max vel units/100ms)
             maxVelUnitsPer100ms=468;  // ,measured on blocks  (encoder units/100ms)
-            vel=new Gains(0.00005, 0.0, 0.0, 20, 0.05683, -1, 1, "vel");  // 1023/468
+            vel=new Gains(0.0005, 0.0, 0.0, 20, 0.05, -1, 1, "vel");  // 1023/468
             posMP=new Gains(3, 0, 1, 0, 2.158, -1, 1, "posMP");
             pos=new Gains(0, 0, 0, 0, 0, -1, 1, "pos");
             angleRot=new Gains(0.0175, 0.0, 0.170, 0, 0.0, -1.0, 1.0, "rotate");
@@ -103,8 +103,11 @@ public class Constants{
         slot_pos=1;
         slot_rotate=2;
         slot_angleMP=3;
-        ramptime=0;
         timeOnTargetGoal=0.2;
+        turnSF=0.5;
+        forwardSF=0.7;
+        ramptime=0;
+        oneWayRampTime=0.015;
     
     
     
@@ -121,7 +124,6 @@ public class Constants{
         sonar.writeGains();
         SmartDashboard.putNumber("PIDTuning/Max RPM", maxRPM);
         SmartDashboard.putNumber("PIDTuning/TOT goal", timeOnTargetGoal);
-        SmartDashboard.putNumber("PIDTuning/ramp time", ramptime);
      }
 
     static public void readGains(){
@@ -134,21 +136,18 @@ public class Constants{
         sonar.readGains();
         maxRPM = SmartDashboard.getNumber("PIDTuning/Max RPM",0);
         timeOnTargetGoal = SmartDashboard.getNumber("PIDTuning/TOT goal",0);
-        ramptime = SmartDashboard.getNumber("PIDTuning/ramptime",0);
     }
 
     static public void readangleRotGains(){
         angleRot.readGains();
         maxRPM = SmartDashboard.getNumber("PIDTuning/Max RPM",0);
         timeOnTargetGoal = SmartDashboard.getNumber("PIDTuning/TOT goal",0);
-        ramptime = SmartDashboard.getNumber("PIDTuning/ramptime",0);
     }
 
     static public void readPosMPGains(){
         posMP.readGains();
         maxRPM = SmartDashboard.getNumber("PIDTuning/Max RPM",0);
         timeOnTargetGoal = SmartDashboard.getNumber("PIDTuning/TOT goal",0);
-        ramptime = SmartDashboard.getNumber("PIDTuning/ramptime",0);
     }
 
 
@@ -156,15 +155,29 @@ public class Constants{
         pos.readGains();
         maxRPM = SmartDashboard.getNumber("PIDTuning/Max RPM",0);
         timeOnTargetGoal = SmartDashboard.getNumber("PIDTuning/TOT goal",0);
-        ramptime = SmartDashboard.getNumber("PIDTuning/ramptime",0);
     }
     
     static public void readOtherGains(){
         other.readGains();
         maxRPM = SmartDashboard.getNumber("PIDTuning/Max RPM",0);
         timeOnTargetGoal = SmartDashboard.getNumber("PIDTuning/TOT goal",0);
-        ramptime = SmartDashboard.getNumber("PIDTuning/ramptime",0);
     }
+
+
+    static public void readDriveParams(){
+        ramptime = SmartDashboard.getNumber("Acc/Dec Ramp",0);
+        oneWayRampTime=SmartDashboard.getNumber("Acc Only Ramp",0);
+        turnSF = SmartDashboard.getNumber("turnSF",0.5);
+        forwardSF = SmartDashboard.getNumber("forwardSF",0.75);
+    }
+
+    static public void writeDriveParams(){
+        SmartDashboard.putNumber("Acc/Dec Ramp",ramptime);
+        SmartDashboard.getNumber("Acc Only Ramp",oneWayRampTime);
+        SmartDashboard.getNumber("turnSF",turnSF);
+        SmartDashboard.getNumber("forwardSF",forwardSF);
+    }
+
     }
 
 

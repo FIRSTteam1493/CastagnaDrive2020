@@ -14,32 +14,67 @@ public class MotionProfileCTRE{
     Notifier notifier;
     Profile profile;
     FalconDriveCTRE drive;
+    Arm arm;
     Stick stick;
+    int i=0,act1=0,act2=0;
     MotionProfileStatus status = new MotionProfileStatus();
 
-    MotionProfileCTRE(FalconDriveCTRE _drive,Stick _stick){
+    MotionProfileCTRE(FalconDriveCTRE _drive,Stick _stick, Arm _arm){
         drive = _drive;
         stick = _stick;
+        arm = _arm;
 
         class PeriodicRunnable implements java.lang.Runnable {
-            int i=0,act1=0;
-// run actions and report on status            
+            
             public void run() {
-                if ( profile.action1[i]!=act1) System.out.println("i "+i+"   act1 "+act1);
+                // run actions            
                 act1=profile.action1[i];
+                if (act1!=0){
+                    switch (act1) {
+                        case 1:
+                            arm.shooterOut();
+                        break;
+                        case 2:
+                            arm.shooterIn();
+                        break;
+                        case 3:
+                            arm.shooterStop();
+                        break;
+
+                }
+            }
+                act2=profile.action2[i];
+                if (act2!=0){
+                    switch (act1) {
+                        case 1:
+                            arm.setPosition(1);
+                        break;
+                        case 2:
+                            arm.setPosition(2);
+                        break;
+                        case 3:
+                            arm.setPosition(3);
+                        break;
+                }
+            }
+            arm.brakeMonitor();
+
+
+                // print status every 10 cycles
                 if(i<(profile.size-2) )i++;
                 iend=i;
                 count++;
                 if(count%10==0){
                      System.out.println(
-                     "ATP_0 "+drive.br.getActiveTrajectoryPosition(0)+"   "+
-                     "CLE_0 "+drive.br.getClosedLoopError(0)+"   "+
+
+                     "ATP_0 "+drive.br.getActiveTrajectoryPosition(0)+"  "+
+                     "CLE_0 "+drive.br.getClosedLoopError(0)+"  "+
                      "ATP_1 "+drive.br.getActiveTrajectoryPosition(1)+"  "+
                      "CLE_1 "+drive.br.getClosedLoopError(1));
                     count=0;
                 }
 
-
+                // Abort if joystick is pushed
                 if ( drive.br.isMotionProfileFinished() || stick.isPushed()) {
                     Robot.runningPID=false;
                     stop();
@@ -49,11 +84,13 @@ public class MotionProfileCTRE{
         }
         notifier = new Notifier(new PeriodicRunnable());
     }
+    
 
     public void runProfile(Profile _profile) {
         profile = _profile;
         iend=0;
         count=0;
+        i=0;act1=0;
         drive.setupTalonTeleop();
         drive.resetEncoders();
         drive.resetGyro();    

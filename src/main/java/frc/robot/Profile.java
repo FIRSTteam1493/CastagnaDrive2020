@@ -31,6 +31,7 @@ public class Profile {
     int size;
     int[] action1,action2;
     BufferedTrajectoryPointStream stream = new BufferedTrajectoryPointStream();
+    double arbffSF=0.75;
     Profile(String name, int type){
 
 
@@ -73,13 +74,14 @@ public class Profile {
                 else {
                     point.velocity = 0.0 * Constants.k_InchPerSecToVelUnits;
                     
-                    // aux polarity set to true -> right side gets difference, left side gets sum 
+                    // aux polarity set to false -> right side gets sum, left side gets difference 
                     point.arbFeedFwd =
-                        0.5* (velLeft[i] + velRight[i])*Constants.k_InchPerSecToVelUnits/Constants.maxVelUnitsPer100ms;    
+                        arbffSF*0.5* (velLeft[i] + velRight[i])*Constants.k_InchPerSecToVelUnits/Constants.maxVelUnitsPer100ms;    
                     point.auxiliaryArbFeedFwd=
-                        0.5*(velLeft[i] - velRight[i])*Constants.k_InchPerSecToVelUnits/Constants.maxVelUnitsPer100ms; 
+                        arbffSF*0.5*(-velLeft[i]  + velRight[i])*Constants.k_InchPerSecToVelUnits/Constants.maxVelUnitsPer100ms; 
                 } 	
-                System.out.println("i="+i+"  pos="+point.position+"   arbff="+point.arbFeedFwd);
+
+                System.out.println("i=" + i + "  arbff="+point.arbFeedFwd+"   auxff="+point.auxiliaryArbFeedFwd);
 
                 point.auxiliaryPos = (int)(angle[i]*8192/360); /* scaled such that 3600 => 360 deg */
                 point.profileSlotSelect0 = Constants.slot_pos; // slot for position
@@ -98,6 +100,7 @@ public class Profile {
             i++;
             }
             br.close();
+            System.out.println("profile read");
         } catch (IOException e) {
             System.out.println("Could not load profile "+name);
         }

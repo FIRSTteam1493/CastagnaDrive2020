@@ -3,9 +3,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DigitalOutput;;
 
 public class LEDdriver{
-    DigitalOutput do1 = new DigitalOutput(17);
-    DigitalOutput do2 = new DigitalOutput(18);
-    DigitalOutput do3 = new DigitalOutput(19);
+    DigitalOutput do1 = new DigitalOutput(23);
+    DigitalOutput do2 = new DigitalOutput(22);
+    DigitalOutput do3 = new DigitalOutput(21);
 
     public LEDdriver(){    
     }
