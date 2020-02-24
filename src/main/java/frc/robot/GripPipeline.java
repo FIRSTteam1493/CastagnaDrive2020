@@ -22,7 +22,6 @@ public class GripPipeline {
 	private Mat maskOutput = new Mat();
 	private ArrayList<MatOfPoint> findContoursOutput = new ArrayList<MatOfPoint>();
 	private ArrayList<MatOfPoint> filterContoursOutput = new ArrayList<MatOfPoint>();
-	private MatOfInt hullMax = new MatOfInt();
 	private MatOfPoint contourMax = new MatOfPoint();
 	public double areaMax;
 	public double aspectRatioMax;
@@ -237,7 +236,6 @@ private void filterContours(List<MatOfPoint> inputContours, double minArea,
 double minPerimeter, double minWidth, double maxWidth, double minHeight, double
 maxHeight, double[] solidity, double maxVertexCount, double minVertexCount, double
 minRatio, double maxRatio, List<MatOfPoint> output) {
-final MatOfInt hull = new MatOfInt();
 output.clear();
 //operation
 for (int i = 0; i < inputContours.size(); i++) {
