@@ -9,7 +9,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class PIDStraightMagic{
 FalconDriveCTRE drive;
 Stick joystick;
-double timeOnTarget=0;
+double timeOnTarget;
+double timeOnTargetGoal=Constants.timeOnTargetGoal;
+double errorAllowable=Constants.errorAllowable;
 double measured_angle,measured_sonar;
 double measured_distl,measured_distr, measured_dist;
 double targetPos;
@@ -24,7 +26,7 @@ PIDStraightMagic(FalconDriveCTRE _drive, Stick _joystick){
     joystick = _joystick;
 
     class PeriodicRunnable implements java.lang.Runnable {
-        double errorTargets=30, errorp;
+        double errorp;
         
         public void run() {
             drive.br.set(ControlMode.MotionMagic, targetPos, DemandType.AuxPID, motionTargetAngle);
@@ -32,7 +34,7 @@ PIDStraightMagic(FalconDriveCTRE _drive, Stick _joystick){
             measured_dist = drive.br.getSelectedSensorPosition(0);
             errorp=targetPos-measured_dist;
 
-            if (Math.abs(errorp)<=errorTargets)
+            if (Math.abs(errorp)<=errorAllowable)
                 timeOnTarget +=0.02;
             else 
                 timeOnTarget=0.0;    
@@ -47,9 +49,9 @@ PIDStraightMagic(FalconDriveCTRE _drive, Stick _joystick){
                 count=0;
             }
 
-            if(timeOnTarget>1 || 
+            if(timeOnTarget>timeOnTargetGoal || 
                 Math.abs(joystick.getRawAxis(1))>0.1 ){
-                   stop();     
+                   stop();
             }
 
         }

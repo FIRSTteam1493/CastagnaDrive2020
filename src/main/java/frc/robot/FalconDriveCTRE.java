@@ -76,8 +76,6 @@ public void setBrakeMode(){
 }
 
 public void setMotors(double leftinput, double rightinput, ControlMode mode){
-    //  Convert maxRPM to units / 100ms.
-    //   4096 Units/Rev * maxRPM / 600 100ms/min in either direction:
     // velocity setpoint is in units/100ms
     double conversion=1.0;
     if (mode==ControlMode.Velocity) 
@@ -141,16 +139,17 @@ public void resetGyro(){
 
 
 public void writeEncoderData(){
-    SmartDashboard.putNumber("Left Pos", getlpos());
-    SmartDashboard.putNumber("Right Pos", getrpos());
-    SmartDashboard.putNumber("Left Vel", getlvel());
-    SmartDashboard.putNumber("Right Vel", getrvel() );
-    SmartDashboard.putNumber("Left Vel RPM", getlvel()*600/Constants.kSensorUnitsPerRotation);
-    SmartDashboard.putNumber("Right Vel RPM", getrvel()*600/Constants.kSensorUnitsPerRotation );
-    SmartDashboard.putNumber("Angle", getAngle() );
-    SmartDashboard.putNumber("CLE_Right", br.getClosedLoopError(0));
-    SmartDashboard.putNumber("FL Pos", fl.getSelectedSensorPosition(0));
-    SmartDashboard.putNumber("FR Pos", fr.getSelectedSensorPosition(0));
+    SmartDashboard.putNumber("Drive/Left Pos", getlpos());
+    SmartDashboard.putNumber("Drive/Right Pos", getrpos());
+    SmartDashboard.putNumber("Drive/Left Vel", getlvel());
+    SmartDashboard.putNumber("Drive/Right Vel", getrvel() );
+    SmartDashboard.putNumber("Drive/Left Vel RPM", getlvel()*600/Constants.kSensorUnitsPerRotation);
+    SmartDashboard.putNumber("Drive/Right Vel RPM", getrvel()*600/Constants.kSensorUnitsPerRotation );
+    SmartDashboard.putNumber("Drive/Angle", getAngle() );
+    SmartDashboard.putNumber("PIDTuning/CLE0_Right", br.getClosedLoopError(0));
+    SmartDashboard.putNumber("PIDTuning/CLE1_Right", br.getClosedLoopError(1));
+    SmartDashboard.putNumber("Drive/FL Pos", fl.getSelectedSensorPosition(0));
+    SmartDashboard.putNumber("Drive/FR Pos", fr.getSelectedSensorPosition(0));
 
   //  System.out.println(br.getClosedLoopError(0) + "  " + br.getClosedLoopTarget() + "   " + br.getSelectedSensorVelocity());
 
@@ -314,6 +313,7 @@ public void setupTalonMotionMagicRotate(){
 
 //*************************************************************************
 //*    Set Talon Parameters for Straight using MotionMagic + Aux Gyro     *
+//*      and Motion Profile                                               *
 //*     right talon is master                                             *
 //*************************************************************************    
 public void setupTalonMotionMagicStraight(){

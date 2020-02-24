@@ -6,7 +6,7 @@ public class Stick extends Joystick{
     private boolean[] _button,button;
     int numButtons;
     double deadband = 0.05;
-    double deltaXMax=0.015,xPrev = 0;
+    double xPrev = 0;
     double forwardSF=0.7,turnSF=0.5;
 
     Stick(int portnum){
@@ -19,6 +19,7 @@ public class Stick extends Joystick{
     }
     public double getRampedInput() {
         double x,y;
+        double deltaXMax=Constants.oneWayRampTime;
         x = -this.getRawAxis(1);
         double deltaX = x - xPrev;
         if (this.getRawButton(1)){ y = x;}
@@ -39,9 +40,14 @@ public class Stick extends Joystick{
      return(y);
 
 }
-    public void readStick(boolean ramp){
-        if (ramp) readDriverJoy();
-        else readOperatorJoy();
+
+    public void readDriverStick(){
+        readDriverJoy();
+        readButtons();
+    }
+
+    public void readOperatorStick(){
+        readOperatorJoy();
         readButtons();
     }
 
@@ -69,7 +75,6 @@ public class Stick extends Joystick{
     }
 
     public void readOperatorJoy() {
-
             forward = -this.getRawAxis(1);           
             if (forward<deadband && forward>-deadband)forward=0;   
             turn =0;
@@ -108,7 +113,7 @@ public class Stick extends Joystick{
     }
 
     public boolean isPushed(){
-        readStick(false);
+        readDriverStick();
         boolean leftpush = (Math.abs(this.leftinput)>0.05) ; 
         boolean rightpush = (Math.abs(this.rightinput)>0.05) ; 
         return ((leftpush||rightpush));

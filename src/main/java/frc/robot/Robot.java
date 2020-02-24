@@ -120,8 +120,8 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    joy0.readStick(true);
-    joy1.readStick(false);
+    joy0.readDriverStick();
+    joy1.readOperatorStick();
 
     if (elevator.calibrated==0 ) {
         System.out.println("Start calibtation0");
@@ -157,7 +157,7 @@ public class Robot extends TimedRobot {
         // camera.read(frame);
         // grip.process(frame);
     }
-    
+
     //read drive paramaters
     else if (joy0.getButton(4) && !joy0.getPrevButton(4) ){
             Constants.readDriveParams();

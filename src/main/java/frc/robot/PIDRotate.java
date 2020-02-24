@@ -9,13 +9,14 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class PIDRotate{
 FalconDriveCTRE drive;
-Sonar sonar;
 Stick joystick;
-double timeOnTarget=2;
-double measured_angle,measured_sonar;
-double measured_distl,measured_distr, measured_dist;
+double timeOnTarget;
+double timeOnTargetGoal=Constants.timeOnTargetGoal;
+double errorAllowable=Constants.errorAllowable;
+double measured_angle;
+double measured_dist;
 double targetAngle;
-double inp_min=0.04;
+double inp_min=Constants.minTurnInp;
 
 private Notifier _notifier;
 
@@ -27,7 +28,6 @@ PIDRotate(FalconDriveCTRE _drive, Stick _joystick){
     joystick = _joystick;
 
     class PeriodicRunnable implements java.lang.Runnable {
-        double errorTargets=0.5;
 
         double errora, preverrora=0, derrora=0, interrora=0;
         double errorp, preverrorp=0, derrorp=0, interrorp=0;
@@ -67,16 +67,8 @@ PIDRotate(FalconDriveCTRE _drive, Stick _joystick){
             if(rightinput> Constants.angleRot.kMax)rightinput=Constants.angleRot.kMax;
             else if(rightinput< -Constants.angleRot.kMax)rightinput=-Constants.angleRot.kMax;
             else if(Math.abs(rightinput)<inp_min) rightinput=inp_min*Math.signum(rightinput);
-
-
-
-/*            
-            if (Math.abs(leftinput) > Constants.angleRot.kMax)
-                leftinput =Constants.angleRot.kMax * Math.signum(leftinput);
-            if (Math.abs(rightinput)>Constants.angleRot.kMax) 
-                rightinput=Constants.angleRot.kMax*Math.signum(rightinput);
-*/            
-            if (Math.abs(errora)<=errorTargets)
+    
+            if (Math.abs(errora)<=errorAllowable)
                 timeOnTarget +=0.02;
             else 
                 timeOnTarget=0.0;          
@@ -86,7 +78,7 @@ PIDRotate(FalconDriveCTRE _drive, Stick _joystick){
             preverrora=errora;
             writePIDVars(measured_angle, errora);
 
-            if(timeOnTarget>0.2 || 
+            if(timeOnTarget>timeOnTargetGoal || 
                 Math.abs(joystick.getRawAxis(1))>0.1 ){
                    stop();     
             }
