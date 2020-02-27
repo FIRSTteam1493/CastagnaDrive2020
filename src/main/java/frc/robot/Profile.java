@@ -81,7 +81,7 @@ public class Profile {
                         arbffSF*0.5*(-velLeft[i]  + velRight[i])*Constants.k_InchPerSecToVelUnits/Constants.maxVelUnitsPer100ms; 
                 } 	
 
-                System.out.println("i=" + i + "  arbff="+point.arbFeedFwd+"   auxff="+point.auxiliaryArbFeedFwd);
+//                System.out.println("i=" + i + "  arbff="+point.arbFeedFwd+"   auxff="+point.auxiliaryArbFeedFwd);
 
                 point.auxiliaryPos = (int)(angle[i]*8192/360); /* scaled such that 3600 => 360 deg */
                 point.profileSlotSelect0 = Constants.slot_pos; // slot for position

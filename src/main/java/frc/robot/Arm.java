@@ -1,7 +1,6 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -15,11 +14,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Arm{
     private TalonFX armMotor = new TalonFX(6);
     private double maxFF=0.00;
-    private int topPos = 90000, intakePos=30000,scorePos=75000, floorPos = 0;
-    private double floorFF,topFF, intakeFF,scoreFF;    
+    private int topPos = 75000, intakePos=30000,scorePos=60000, floorPos = 0;
     private CANSparkMax shooterMotor = new CANSparkMax(3, MotorType.kBrushless);
-    private Solenoid armsol1 = new Solenoid(0);
-    private Solenoid armsol2 = new Solenoid(1);
+    private CANSparkMax wofMotor = new CANSparkMax(2, MotorType.kBrushless);
+
+    private Solenoid armsol1 = new Solenoid(3);
+    private Solenoid armsol2 = new Solenoid(6);
     // On Position:   solState1 = true       solState2 = false
     // Off Position:   solState1 = false     solState2 = true
     // start with brake on
@@ -28,39 +28,40 @@ public class Arm{
 
 Arm(){
 
-    floorFF=getFF(floorPos);
-    scoreFF=getFF(scorePos);
-    intakeFF=getFF(intakePos);
-    topFF= getFF(topPos);
-
     armMotor.configFactoryDefault();
-    armMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled);
+    armMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
     armMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
     armMotor.set(ControlMode.PercentOutput, 0);
     
 // slot 0 for magic motion by button    
     armMotor.config_kP(0,.5);
     armMotor.config_kD(0,.2);
+    armMotor.config_kF(0,.05);
+//    armMotor.config_kF(0,0.056);
     armMotor.configClosedLoopPeakOutput(0, .5);
     
 // slot 1 for manual control    
     armMotor.config_kP(1,.4);
     armMotor.config_kD(1,0.1);
-    armMotor.configClosedLoopPeakOutput(1,0.4);
+    armMotor.config_kF(0,0.125);
+    armMotor.configClosedLoopPeakOutput(1,0.5);
 
     armMotor.configClearPositionOnLimitF(true,20);
     armMotor.setSelectedSensorPosition(0);
 
-    armMotor.configMotionCruiseVelocity(15000);
-    armMotor.configMotionAcceleration(30000);
+    armMotor.configMotionCruiseVelocity(8000);
+    armMotor.configMotionAcceleration(16000);
+    armMotor.configMotionSCurveStrength(3);
 
     armMotor.selectProfileSlot(0, 0);
 
     shooterMotor.restoreFactoryDefaults();
     shooterMotor.setIdleMode(IdleMode.kBrake);
+    wofMotor.restoreFactoryDefaults();
+    wofMotor.setIdleMode(IdleMode.kBrake);
 
     armsol1.set(sol1State);
-    armsol2.set(sol1State);
+    armsol2.set(sol2State);
 
     writeArmData();
     SmartDashboard.putNumber("Arm/MaxFF", maxFF);
@@ -73,25 +74,17 @@ public void setPosition(int pos){
     armMotor.selectProfileSlot(0, 0);
 
     if (pos==1) {
-        floorFF=getFF(floorPos);
-        armMotor.set(ControlMode.MotionMagic, floorPos , DemandType.ArbitraryFeedForward, floorFF);
-        System.out.println("floorFF = "+floorFF);
+        armMotor.set(ControlMode.MotionMagic, floorPos);
+
     }
     else if (pos==2) {
-        scoreFF=getFF(scorePos);
-        armMotor.set(ControlMode.MotionMagic, scorePos , DemandType.ArbitraryFeedForward, scoreFF);
-        System.out.println("scoreFF = "+scoreFF);
-        SmartDashboard.putNumber("Arm/Score FF", scoreFF);
+        armMotor.set(ControlMode.MotionMagic, scorePos);
     }
     else if (pos==3) {
-        intakeFF=getFF(intakePos);
-        armMotor.set(ControlMode.MotionMagic, intakePos , DemandType.ArbitraryFeedForward, intakeFF);
-        System.out.println("intakeFF = "+intakeFF);
+        armMotor.set(ControlMode.MotionMagic, intakePos);
     }
     else if (pos==4) {
-        topFF= getFF(topPos);
-        armMotor.set(ControlMode.MotionMagic, topPos , DemandType.ArbitraryFeedForward, topFF);
-        System.out.println("topFF = "+topFF);
+        armMotor.set(ControlMode.MotionMagic, topPos);
     }
     
 }
@@ -99,13 +92,12 @@ public void setPosition(int pos){
 
 public void manualSetPosition(double stickInput){
     int currentPos = armMotor.getSelectedSensorPosition(0);
-    double ff = getFF(currentPos);
     double setPoint = currentPos+stickInput*10000;
-    if (setPoint>topPos) setPoint=topPos;
+//    if (setPoint>topPos) setPoint=topPos;
   //  if (setPoint<floorPos) setPoint=floorPos;
   // use profile slot 1
     armMotor.selectProfileSlot(1,0);
-    armMotor.set(ControlMode.MotionMagic, setPoint , DemandType.ArbitraryFeedForward, ff);
+    armMotor.set(ControlMode.MotionMagic, setPoint);
 //    if (armMotor.getSensorCollection().isFwdLimitSwitchClosed() == 1) armMotor.setSelectedSensorPosition(floorPos);
     if (armMotor.getSensorCollection().isRevLimitSwitchClosed() == 1) armMotor.setSelectedSensorPosition(0);
 }
@@ -122,6 +114,18 @@ public void shooterStop(){
     shooterMotor.set(0);
 }
 
+public void wofIn(){
+    wofMotor.set(0.5);
+}
+
+public void wofOut(){
+    wofMotor.set(-0.5);
+}
+
+public void wofStop(){
+    wofMotor.set(0);
+}
+
 public void writeArmData(){
     SmartDashboard.putNumber("Arm/Arm Pos",armMotor.getSelectedSensorPosition(0));
     SmartDashboard.putNumber("Arm/Arm Error",armMotor.getClosedLoopError(0));
@@ -136,34 +140,30 @@ public void writeArmData(){
 public void brakeOn(){
     sol1State=true;sol2State=false;
     armsol1.set(sol1State);
-    armsol2.set(sol1State);
+    armsol2.set(sol2State);
 }
 public void brakeOff(){
     sol1State=false;sol2State=true;
     armsol1.set(sol1State);
-    armsol2.set(sol1State);
+    armsol2.set(sol2State);
 }
 
 public void toggleBrake(){
     sol1State=!sol1State;sol2State=!sol2State;
     armsol1.set(sol1State);
-    armsol2.set(sol1State);
-}
+    armsol2.set(sol2State);
+   }
 
 public void brakeMonitor(){
     // if brake is on and motor is driving, turn brake off
-    if(armMotor.getMotorOutputVoltage()>0.06 && sol1State) brakeOff();    
+    if(Math.abs(armMotor.getMotorOutputVoltage())>0.06 && sol1State) {
+        brakeOff();
+    } 
     // if brake is off and motor stopped, turn brake on 
-    else if (armMotor.getMotorOutputVoltage()<=0.06 && !sol1State ) {
+    else if (Math.abs(armMotor.getMotorOutputVoltage())<=0.06 && !sol1State ) {
         brakeOn();
         armMotor.set(ControlMode.PercentOutput, 0);
     }
-}
-
-
-private double getFF(int currentPos){
-    double angle=(Math.PI/2.)*currentPos/(double)topPos;
-    return Math.cos(angle)*maxFF;
 }
 
 

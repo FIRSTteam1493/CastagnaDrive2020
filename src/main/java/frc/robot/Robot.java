@@ -4,7 +4,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Relay.Direction;
 import edu.wpi.first.wpilibj.Relay.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,6 +12,8 @@ import com.revrobotics.CANDigitalInput;
 import org.opencv.core.Mat;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import org.opencv.videoio.VideoCapture;
+
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Relay;
 //import badlog.lib.BadLog;
 
@@ -41,6 +42,7 @@ public class Robot extends TimedRobot {
     LEDdriver led = new LEDdriver();
     Relay relayLimelight = new Relay(3);
     Relay relayLED = new Relay(1);
+    Compressor compressor = new Compressor();
     private String m_autoSelected;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
   
@@ -48,6 +50,7 @@ public class Robot extends TimedRobot {
     CANDigitalInput reverseLimit;
 //    ColorSensor colorSensor = new ColorSensor();
     Mat frame = new Mat();
+    int pattern=1;
 
     Profile straight60_48,straightarc60_48, straightarc120_48, straightarc120_96, wof_goal,straight83;
 
@@ -115,6 +118,8 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
   //    elevator.calibrate();
+  compressor.stop();
+    
   }
 
   @Override
@@ -154,6 +159,8 @@ public class Robot extends TimedRobot {
     }
 
     else if (joy0.getButton(3) && !joy0.getPrevButton(3) ){
+        pattern++;if(pattern>7)pattern=1;
+        led.sendData(pattern);
         // camera.read(frame);
         // grip.process(frame);
     }
@@ -221,7 +228,9 @@ public class Robot extends TimedRobot {
     else if (joy1.getButton(6)) arm.shooterOut();
     else if(!runningPID)  arm.shooterStop();
 
-    if (joy1.getButton(8) && !joy1.getPrevButton(8)) arm.toggleBrake();  
+    if(joy1.getButton(7)) arm.wofIn();
+    else if (joy1.getButton(8)) arm.wofOut();
+    else if(!runningPID)  arm.wofStop();
 
     if (joy1.getButton(9) && !joy1.getPrevButton(9) )  elevator.down();
     else if (joy1.getButton(10) && !joy1.getPrevButton(10) )  elevator.up();        
@@ -235,7 +244,7 @@ public class Robot extends TimedRobot {
     
     if(joy1.isPushed())arm.manualSetPosition(joy1.forward);
      
-    
+    arm.brakeMonitor();
     drive.writeEncoderData();
     limelight.getLimelightData();
     arm.writeArmData();

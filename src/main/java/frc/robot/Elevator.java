@@ -24,13 +24,20 @@ Elevator(){
 //    elevator.configReverseSoftLimitThreshold(0);
     elevator.config_kP(0,.06);
     elevator.config_kD(0,0);
+    elevator.config_kF(0,0.056);
     elevator.configClosedLoopPeakOutput(0, 1.0);
 
     
     elevator.config_kP(1,.05);
     elevator.config_kD(1,0);
-    elevator.configClosedLoopPeakOutput(1,0.60);
-    elevator.configClearPositionOnLimitF(true,20);
+    elevator.config_kF(1,0.04);
+
+    elevator.configClosedLoopPeakOutput(1,0.40);
+
+    elevator.configClearPositionOnLimitR(true,20);
+
+    elevator.configMotionCruiseVelocity(18000);
+    elevator.configMotionAcceleration(36000);
 
 
 }
@@ -58,7 +65,7 @@ public void up(){
     if(calibrated==2){
         setPoint=topPos;
         elevator.selectProfileSlot(0, 0);
-        elevator.set(ControlMode.Position, setPoint);
+        elevator.set(ControlMode.MotionMagic, setPoint);
     }
 }
 
@@ -68,7 +75,8 @@ public void down(){
         if (setPoint==topPos) setPoint=hangPos;
         else setPoint=botPos;
         elevator.selectProfileSlot(1, 0);
-        elevator.set(ControlMode.Position, setPoint);
+        elevator.set(ControlMode.MotionMagic, setPoint);
+        System.out.println("SetPoint = "+setPoint);
     }
 }
 
