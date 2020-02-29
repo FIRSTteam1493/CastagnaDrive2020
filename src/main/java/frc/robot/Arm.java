@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Arm{
     private TalonFX armMotor = new TalonFX(6);
     private double maxFF=0.00;
-    private int topPos = 75000, intakePos=30000,scorePos=60000, floorPos = 0;
+    private int topPos = 86000, intakePos=86000,scorePos=86000, floorPos = 0;
     private CANSparkMax shooterMotor = new CANSparkMax(3, MotorType.kBrushless);
     private CANSparkMax wofMotor = new CANSparkMax(2, MotorType.kBrushless);
 
@@ -38,19 +38,19 @@ Arm(){
     armMotor.config_kD(0,.2);
     armMotor.config_kF(0,.05);
 //    armMotor.config_kF(0,0.056);
-    armMotor.configClosedLoopPeakOutput(0, .5);
+    armMotor.configClosedLoopPeakOutput(0, 0.7);
     
 // slot 1 for manual control    
     armMotor.config_kP(1,.4);
     armMotor.config_kD(1,0.1);
     armMotor.config_kF(0,0.125);
-    armMotor.configClosedLoopPeakOutput(1,0.5);
+    armMotor.configClosedLoopPeakOutput(1,0.7);
 
     armMotor.configClearPositionOnLimitF(true,20);
     armMotor.setSelectedSensorPosition(0);
 
-    armMotor.configMotionCruiseVelocity(8000);
-    armMotor.configMotionAcceleration(16000);
+    armMotor.configMotionCruiseVelocity(10000);
+    armMotor.configMotionAcceleration(20000);
     armMotor.configMotionSCurveStrength(3);
 
     armMotor.selectProfileSlot(0, 0);
@@ -78,10 +78,10 @@ public void setPosition(int pos){
 
     }
     else if (pos==2) {
-        armMotor.set(ControlMode.MotionMagic, scorePos);
+        armMotor.set(ControlMode.MotionMagic, intakePos);
     }
     else if (pos==3) {
-        armMotor.set(ControlMode.MotionMagic, intakePos);
+        armMotor.set(ControlMode.MotionMagic, scorePos);
     }
     else if (pos==4) {
         armMotor.set(ControlMode.MotionMagic, topPos);

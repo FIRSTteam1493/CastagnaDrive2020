@@ -15,6 +15,7 @@ double errorAllowable=Constants.errorAllowable;
 double measured_angle,measured_sonar;
 double measured_distl,measured_distr, measured_dist;
 double targetPos;
+boolean runningPID=false;
 
 private Notifier _notifier;
 
@@ -63,7 +64,7 @@ PIDStraightMagic(FalconDriveCTRE _drive, Stick _joystick){
 
 
 public void run(double _targetPos, int vel, int acc){
-    Robot.runningPID=true;
+    runningPID=true;
     drive.setupTalonTeleop(); 
     drive.resetEncoders();
     drive.resetGyro();
@@ -75,13 +76,15 @@ public void run(double _targetPos, int vel, int acc){
     motionTargetAngle=0;
     System.out.println("A1 "+targetPos);
     _notifier.startPeriodic(0.01);
+    while(runningPID){
+    }
 }
 
 
 public void stop(){
     _notifier.stop();
-    Robot.runningPID=false;
     drive.setupTalonTeleop();
+    runningPID=false;
 }
 
 

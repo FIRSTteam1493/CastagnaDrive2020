@@ -12,13 +12,12 @@ public class BumpSensor{
 FalconDriveCTRE drive;
 Stick joystick;
 double measured_angle;
-double vel;
+double vel,vel1,vel2;
+int currentDist,dist1;
+double motionTargetAngle;  
 Accelerometer accelerometer = new BuiltInAccelerometer();
-
 private Notifier _notifier;
 
-int count=0;
-double motionTargetAngle;  
 
 BumpSensor(FalconDriveCTRE _drive, Stick _joystick){
     drive=_drive;
@@ -27,15 +26,20 @@ BumpSensor(FalconDriveCTRE _drive, Stick _joystick){
     class PeriodicRunnable implements java.lang.Runnable {
         
         public void run() {
+
+            currentDist=drive.br.getSelectedSensorPosition(0);
+            if(currentDist<dist1)
+                vel=vel1;
+            else 
+                vel=vel2;
             drive.br.set(ControlMode.Velocity, vel, DemandType.AuxPID, motionTargetAngle);
             drive.bl.follow(drive.br, FollowerType.AuxOutput1);
 
+
             if(accelerometer.getY()<-0.15 || 
                 Math.abs(joystick.getRawAxis(1))>0.1 ){
-                    drive.br.set(ControlMode.Velocity, 0);
-                    drive.bl.set(ControlMode.Velocity, 0);
-                    
-                   stop();     
+                    drive.setMotors(0,0,ControlMode.Velocity);
+                    stop();     
             }
 
         }
@@ -46,11 +50,14 @@ BumpSensor(FalconDriveCTRE _drive, Stick _joystick){
 
 
 
-public void run(double _vel){
+public void run(double _vel1, double _vel2, double _dist1){
     Robot.runningPID=true;
     drive.setupTalonBump();
-    motionTargetAngle=0;
-    vel = vel*Constants.k_InchPerSecToVelUnits;
+    motionTargetAngle=0;    
+    dist1=(int)(_dist1*Constants.kSensorUnitsPerInch);
+    System.out.println("Dist1 = "+dist1);
+    vel1 = _vel1*Constants.k_InchPerSecToVelUnits;
+    vel2 = _vel2*Constants.k_InchPerSecToVelUnits;
     _notifier.startPeriodic(0.01);
 
 }

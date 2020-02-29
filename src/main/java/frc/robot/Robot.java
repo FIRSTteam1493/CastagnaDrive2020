@@ -13,6 +13,7 @@ import org.opencv.core.Mat;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import org.opencv.videoio.VideoCapture;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Relay;
 //import badlog.lib.BadLog;
@@ -20,6 +21,9 @@ import edu.wpi.first.wpilibj.Relay;
 public class Robot extends TimedRobot {
     boolean LEDrelay=false;
     static boolean runningPID = false;
+    static boolean autoStarted = false;
+
+
     static boolean turbo = false;
     public static boolean FX = true;
     Constants constants = new Constants();
@@ -33,16 +37,13 @@ public class Robot extends TimedRobot {
     Elevator elevator = new Elevator();
     Arm arm = new Arm();
     MotionProfileCTRE mpctre = new MotionProfileCTRE(drive, joy0, arm);
+
     Limelight limelight = new Limelight(joy0, drive, mpctre);
-    PIDRotate pidRotate = new PIDRotate(drive,joy0);  
-    PIDRotateMagic pidRotateMagic = new PIDRotateMagic(drive,joy0);  
-    PIDStraightMagic pidStraightMagic = new PIDStraightMagic(drive,joy0);
-    PIDSonar pidSonar = new PIDSonar(drive,joy0);
-    BumpSensor bump = new BumpSensor(drive, joy0);
     LEDdriver led = new LEDdriver();
     Relay relayLimelight = new Relay(3);
     Relay relayLED = new Relay(1);
     Compressor compressor = new Compressor();
+    Auto auto = new Auto(drive,joy0,arm,mpctre);
     private String m_autoSelected;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
   
@@ -52,28 +53,25 @@ public class Robot extends TimedRobot {
     Mat frame = new Mat();
     int pattern=1;
 
-    Profile straight60_48,straightarc60_48, straightarc120_48, straightarc120_96, wof_goal,straight83;
+
 
   @Override
   public void robotInit() {
     SmartDashboard.putString("Messages", "Hello");
     Constants.writeGains();
     Constants.writeDriveParams();
-    camera = new VideoCapture(0);
+    //camera = new VideoCapture(0);
+    CameraServer.getInstance().startAutomaticCapture();
 
-    m_chooser.setDefaultOption("Rotate90", "Rotate90");
-    m_chooser.addOption("Rotate180", "Rotate180");
-    m_chooser.addOption("Straight120_48ips", "Straight120_48ips");
-    m_chooser.addOption("Straight120_96ips", "Straight120_96ips");
-    m_chooser.addOption("Profile_straight60_48", "Profile_straight60_48");
-    m_chooser.addOption("Profile_straightarc60_48", "Profile_straightarc60_48");
-    m_chooser.addOption("Profile_straightarc120_48", "Profile_straightarc120_48");
-    m_chooser.addOption("Profile_straightarc120_96", "Profile_straightarc120_96");
-    m_chooser.addOption("Profile_outback_96", "Profile_outback_96");
-    m_chooser.addOption("Profile_WOF_Goal", "Profile_WOF_Goal");
-    m_chooser.addOption("Other", "Other");
-
+    m_chooser.setDefaultOption("do_nothing", "do_nothing");
+    m_chooser.addOption("shoot3_straight", "shoot3_straight");
+    m_chooser.addOption("push_shoot3", "push_shoot3");
+    m_chooser.addOption("shoot3_side", "shoot3_side");
+    m_chooser.addOption("shoot3_side_delay", "shoot3_side_delay");
+    m_chooser.addOption("trench_shoot5", "trench_shoot5");
+    m_chooser.addOption("backup_pass", "backup_pass");
     SmartDashboard.putData("Auto choices", m_chooser);
+
     relayLimelight.setDirection(Direction.kForward);
     relayLED.setDirection(Direction.kForward);
     relayLED.set(Value.kOff);
@@ -93,18 +91,13 @@ public class Robot extends TimedRobot {
 
     log.finishInitialization();
 */
-    straight60_48 = new Profile("/home/lvuser/profile_straight60_48.profile",2);   
-    straightarc60_48 = new Profile("/home/lvuser/profile_straightArc60_48.profile",2);   
-    straight83 = new Profile("/home/lvuser/straight83.profile",2);   
- //   straightarc120_48 = new Profile("/home/lvuser/profile_straightArc120_48.profile",2);   
-//    straightarc120_96 = new Profile("/home/lvuser/profile_straightArc120_96.profile",2);   
-//    wof_goal = new Profile("/home/lvuser/profile_wof_goal.profile",2);   
 
 }
 
 
   @Override
   public void autonomousInit() {
+      m_autoSelected = m_chooser.getSelected();
       drive.resetEncoders();
       drive.resetGyro();
   }
@@ -112,13 +105,14 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
+    if(!autoStarted) auto.runAuto(m_autoSelected);
+
   }
 
   
   @Override
   public void teleopInit() {
-  //    elevator.calibrate();
-  compressor.stop();
+    autoStarted=false;
     
   }
 
@@ -159,7 +153,7 @@ public class Robot extends TimedRobot {
     }
 
     else if (joy0.getButton(3) && !joy0.getPrevButton(3) ){
-        pattern++;if(pattern>7)pattern=1;
+        pattern++;if(pattern>7)pattern=0;
         led.sendData(pattern);
         // camera.read(frame);
         // grip.process(frame);
@@ -171,44 +165,7 @@ public class Robot extends TimedRobot {
             drive.setRampTime(Constants.ramptime);
             }
 
-    else if (joy0.getButton(5) &&!joy0.getPrevButton(5) ) {
-        m_autoSelected = m_chooser.getSelected();
-        switch (m_autoSelected) {
-            case "Rotate90":
-                pidRotate.run(90.0,true);
-            break;
-            case "Rotate180":
-                pidRotate.run(90.0,true);
-            break;
-            case "Straight120_48ips":
-                pidStraightMagic.run(120.0,3000,6000);    
-            break;                
-            case "Straight120_96ips":
-                pidStraightMagic.run(120.0,6000,12000);    
-            break;               
-            case "Profile_straight60_48":
-                mpctre.runProfile(straight60_48); 
-            break;                           
-            case "Profile_straightarc60_48":
-                mpctre.runProfile(straightarc60_48); 
-            break;                           
-            case "Profile_straightarc120_48":
-                mpctre.runProfile(straightarc120_48); 
-            break;                           
-            case "Profile_straightarc120_96":
-                mpctre.runProfile(straightarc120_96);    
-            break;                           
-            case "Profile_WOF_Goal":
-                mpctre.runProfile(wof_goal);    
-            break;                         
-            case "Other":
-            mpctre.runProfile(straight83);    
-        break;                           
-            default:
-              // Put default auto code here
-          break;
-      }
-    }
+
     if (joy0.getButton(7)  && !joy0.getPrevButton(7) && !runningPID){}
     //             limelight.driveStraightToTarget();
 
@@ -240,14 +197,13 @@ public class Robot extends TimedRobot {
 // else drive manually         
     if(!runningPID) 
         drive.setMotors(joy0.getLeft(),joy0.getRight(),ControlMode.Velocity);
-//        drive.setMotors(joy0.getLeft(),joy0.getRight(),ControlMode.PercentOutput);
     
     if(joy1.isPushed())arm.manualSetPosition(joy1.forward);
      
     arm.brakeMonitor();
     drive.writeEncoderData();
-    limelight.getLimelightData();
-    arm.writeArmData();
+//    limelight.getLimelightData();
+//    arm.writeArmData();
     
 
 //    log.updateTopics();
