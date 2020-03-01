@@ -69,10 +69,10 @@ public class Constants{
             maxVelUnitsPer100ms=14000;
             // kP  KI,  kD,   kIz,   kFF,   kMin,   kMax,   Key for smartdash;
             vel=new Gains(0.0050, 0.0, 0.0, 20, 0.05, -1, 1, "vel");  // 1023/468
-            posMP=new Gains(0.2, 0, 0.7, 0,  0.05, -1, 1, "posMP");
+            posMP=new Gains(0.15, 0, 0.8, 0,  0.05, -1, 1, "posMP");
             pos=new Gains(0.034900, 0, 0, 0, 0.0593, -1, 1, "pos");
             angleRot=new Gains(0.0175, 0.0, 0.170, 0, 0.0, -0.5, 0.5, "rotate");
-            angleMP=new Gains(0.026, 0, 0, 0, 0, -0.5, 0.5, "angleMP");
+            angleMP=new Gains(0.35, 0, .1, 0, 0, -0.5, 0.5, "angleMP");
             sonar=new Gains(0, 0, 0, 0, 0.0, -1, 1, "sonar");
             other=new Gains(0, 0, 0, 0, 0.0 , -1, 1, "other");    
         }

@@ -15,7 +15,7 @@ public class Auto{
     PIDStraightMagic pidStraightMagic; 
      BumpSensor bump;
     Profile straight60_48,straightarc60_48;
-    Profile shoot3_side;
+    Profile shoot3_side,trench_shoot5;
 
 
 
@@ -23,15 +23,17 @@ public class Auto{
         drive = _drive;
         arm = _arm;
         mpctre = _mpctre;
+        joy0=_joy0;
 
         pidRotate= new PIDRotate(drive,joy0);
         pidRotateMagic = new PIDRotateMagic(drive,joy0);
         bump = new BumpSensor(drive, joy0);
         pidStraightMagic= new PIDStraightMagic(drive,joy0);
 
-        shoot3_side = new Profile("/home/lvuser/profile_shoot3_side",2);   
+        shoot3_side = new Profile("/home/lvuser/profile_side_shoot3.profile",2);   
+        trench_shoot5 = new Profile("/home/lvuser/profile_trench_shoot5.profile",2);   
         straightarc60_48 = new Profile("/home/lvuser/profile_straightArc60_48.profile",2);   
-        straight60_48 = new Profile("/home/lvuser/straight83.profile",2);   
+        straight60_48 = new Profile("/home/lvuser/profile_straight60.profile",2);   
      //   straightarc120_48 = new Profile("/home/lvuser/profile_straightArc120_48.profile",2);   
     //    straightarc120_96 = new Profile("/home/lvuser/profile_straightArc120_96.profile",2);   
     //    wof_goal = new Profile("/home/lvuser/profile_wof_goal.profile",2);   
@@ -39,6 +41,7 @@ public class Auto{
     }
 
     public void runAuto(String m_autoSelected){
+        System.out.println("flag A");
         switch (m_autoSelected) {
             case "do_nothing":
                 doNothing();
@@ -47,6 +50,7 @@ public class Auto{
                 shoot3Straight();
             break;
             case "shoot3_side":
+            System.out.println("flag B");
                 shoot3Side();    
             break;                
             case "shoot3_side_delay":
@@ -56,7 +60,7 @@ public class Auto{
                 pushShoot3();
             break;
             case "trench_shoot5":
-                mpctre.runProfile(straight60_48); 
+                trenchShoot5(); 
             break;                           
             case "backup_pass":
                 mpctre.runProfile(straightarc60_48); 
@@ -79,14 +83,15 @@ public class Auto{
     {   
         drive.setupTalonBump();
         arm.setPosition(2);
-        bump.run(48,24,75);
+        bump.run(0.5,.35,48);
         arm.shooterOut();
         Timer.delay(0.5);
         arm.shooterStop();
         drive.br.setSelectedSensorPosition(0);
         drive.setupTalonMotionMagicStraight();
-        pidStraightMagic.run(-24, -6000, -12000);
-        pidRotate.run(-60, false);
+        pidStraightMagic.run(-24, 6000, 12000);
+ //       pidRotate.run(-60, false);
+        drive.setupTalonTeleop();
         drive.setMotors(0, 0, ControlMode.Velocity);
 }
 
@@ -121,6 +126,10 @@ private void pushShoot3()
     drive.setMotors(0, 0, ControlMode.Velocity);
 }
 
+private void trenchShoot5()
+{   
+   mpctre.runProfile(trench_shoot5);
+}
 
 
 }

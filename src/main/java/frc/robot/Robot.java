@@ -61,7 +61,9 @@ public class Robot extends TimedRobot {
     Constants.writeGains();
     Constants.writeDriveParams();
     //camera = new VideoCapture(0);
-    CameraServer.getInstance().startAutomaticCapture();
+
+    // use this one
+    //  CameraServer.getInstance().startAutomaticCapture();
 
     m_chooser.setDefaultOption("do_nothing", "do_nothing");
     m_chooser.addOption("shoot3_straight", "shoot3_straight");
@@ -105,8 +107,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
-    if(!autoStarted) auto.runAuto(m_autoSelected);
 
+    if(!autoStarted) auto.runAuto(m_autoSelected);
+    autoStarted=true;
   }
 
   
@@ -202,8 +205,9 @@ public class Robot extends TimedRobot {
      
     arm.brakeMonitor();
     drive.writeEncoderData();
+    drive.getCurrent();
 //    limelight.getLimelightData();
-//    arm.writeArmData();
+    arm.writeArmData();
     
 
 //    log.updateTopics();

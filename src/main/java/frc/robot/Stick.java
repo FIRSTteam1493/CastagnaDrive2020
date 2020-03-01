@@ -59,7 +59,7 @@ public class Stick extends Joystick{
         double sf=Constants.forwardSF;
         if(Robot.turbo)sf=1;
 //        forward=-getRampedInput()*sf;
-        forward = this.getRawAxis(1)*sf;  
+        forward = -this.getRawAxis(1)*sf;  
         if (forward<deadband && forward>-deadband)forward=0;
         forward = Math.pow(forward,2)*Math.signum(forward);
         turn =this.getRawAxis(2)*Constants.turnSF;

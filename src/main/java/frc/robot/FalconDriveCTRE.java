@@ -22,10 +22,10 @@ public class FalconDriveCTRE{
 
     static boolean FX = Robot.FX;
     
-  TalonFX bl = new TalonFX(2);
-    TalonFX br = new TalonFX(4);
-    TalonFX fl = new TalonFX(1);
-    TalonFX fr = new TalonFX(3);
+  TalonFX bl = new TalonFX(3);
+    TalonFX br = new TalonFX(1);
+    TalonFX fl = new TalonFX(4);
+    TalonFX fr = new TalonFX(2);
 
   
 /*    TalonSRX bl = new TalonSRX(2);
@@ -126,6 +126,13 @@ public double getAngle(){
     return ypr_deg[0];
 }  
 
+public void getCurrent(){
+    SmartDashboard.putNumber("Drive/FL Current", fl.getStatorCurrent());
+    SmartDashboard.putNumber("Drive/BL Current", bl.getStatorCurrent());
+    SmartDashboard.putNumber("Drive/FR Current", fr.getStatorCurrent());
+    SmartDashboard.putNumber("Drive/BR Current", br.getStatorCurrent());
+}  
+
 
 public void resetEncoders(){
     bl.setSelectedSensorPosition(0);
@@ -192,10 +199,10 @@ br.configFactoryDefault();
 fr.configFactoryDefault();
 bl.configFactoryDefault();
 fl.configFactoryDefault();  
-br.configVoltageCompSaturation(12);
-bl.configVoltageCompSaturation(12);
-fr.configVoltageCompSaturation(12);
-bl.configVoltageCompSaturation(12);
+//br.configVoltageCompSaturation(12);
+//bl.configVoltageCompSaturation(12);
+//fr.configVoltageCompSaturation(12);
+//bl.configVoltageCompSaturation(12);
 
 setBrakeMode();    
 
@@ -392,10 +399,10 @@ public void setupTalonMotionMagicStraight(){
     br.selectProfileSlot(Constants.slot_vel, 0);
     bl.selectProfileSlot(Constants.slot_vel, 0);
 
-    br.configVoltageCompSaturation(12);
-    bl.configVoltageCompSaturation(12);
-    fr.configVoltageCompSaturation(12);
-    bl.configVoltageCompSaturation(12);
+//    br.configVoltageCompSaturation(12);
+ //   bl.configVoltageCompSaturation(12);
+ //   fr.configVoltageCompSaturation(12);
+ //   bl.configVoltageCompSaturation(12);
 }
 
 
@@ -405,7 +412,7 @@ public void setupTalonMotionMagicStraight(){
 //*     reset parameters that might have been changed in PID mode  *
 //******************************************************************   
 public void setupTalonBump(){
-    setRampTime((0.0));
+    setRampTime((0.5));
     setupTalonTeleop();
     br.configRemoteFeedbackFilter(gyro.getDeviceID(),
     RemoteSensorSource.Pigeon_Yaw, 1,20);  
@@ -417,6 +424,7 @@ public void setupTalonBump(){
     setPIDGains(Constants.slot_angleMP,Constants.angleMP);
     br.selectProfileSlot(Constants.slot_vel, 0);
     br.selectProfileSlot(Constants.slot_angleMP, 1);
+    br.setSelectedSensorPosition(0);
 }
 
 }

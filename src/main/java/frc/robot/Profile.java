@@ -44,6 +44,7 @@ public class Profile {
             String s;
             int i = 0;
             size = Integer.parseInt(br.readLine());
+            System.out.println("Profile "+filename+" size = "+size);
             time = new double[size];
             vel=new double[size];
             velLeft=new double[size];

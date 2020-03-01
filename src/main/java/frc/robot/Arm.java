@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  
 public class Arm{
     private TalonFX armMotor = new TalonFX(6);
-    private double maxFF=0.00;
     private int topPos = 86000, intakePos=86000,scorePos=86000, floorPos = 0;
     private CANSparkMax shooterMotor = new CANSparkMax(3, MotorType.kBrushless);
     private CANSparkMax wofMotor = new CANSparkMax(2, MotorType.kBrushless);
@@ -31,6 +30,13 @@ Arm(){
     armMotor.configFactoryDefault();
     armMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
     armMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+    
+    System.out.println("lsf = "+    
+    armMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen));
+
+    System.out.println("lsr = "+    
+    armMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen));
+    
     armMotor.set(ControlMode.PercentOutput, 0);
     
 // slot 0 for magic motion by button    
@@ -64,13 +70,11 @@ Arm(){
     armsol2.set(sol2State);
 
     writeArmData();
-    SmartDashboard.putNumber("Arm/MaxFF", maxFF);
 
 }
 
 
 public void setPosition(int pos){
-    maxFF = SmartDashboard.getNumber("Arm/MaxFF", 0);
     armMotor.selectProfileSlot(0, 0);
 
     if (pos==1) {
@@ -99,7 +103,7 @@ public void manualSetPosition(double stickInput){
     armMotor.selectProfileSlot(1,0);
     armMotor.set(ControlMode.MotionMagic, setPoint);
 //    if (armMotor.getSensorCollection().isFwdLimitSwitchClosed() == 1) armMotor.setSelectedSensorPosition(floorPos);
-    if (armMotor.getSensorCollection().isRevLimitSwitchClosed() == 1) armMotor.setSelectedSensorPosition(0);
+//    if (armMotor.getSensorCollection().isRevLimitSwitchClosed() == 1) armMotor.setSelectedSensorPosition(0);
 }
 
 public void shooterIn(){

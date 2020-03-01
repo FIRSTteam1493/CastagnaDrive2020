@@ -28,6 +28,7 @@ public class MotionProfileCTRE{
                 // run actions            
                 act1=profile.action1[i];
                 if (act1!=0){
+                    System.out.println("act1 = "+act1);
                     switch (act1) {
                         case 1:
                             arm.shooterOut();
@@ -43,9 +44,10 @@ public class MotionProfileCTRE{
             }
                 act2=profile.action2[i];
                 if (act2!=0){
-                    switch (act1) {
+                    System.out.println("act2 = "+act2);
+                    switch (act2) {
                         case 1:
-                            arm.setPosition(1);
+                            arm.setPosition(0);
                         break;
                         case 2:
                             arm.setPosition(2);
