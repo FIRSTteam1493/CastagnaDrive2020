@@ -62,7 +62,7 @@ public class Stick extends Joystick{
         forward = -this.getRawAxis(1)*sf;  
         if (forward<deadband && forward>-deadband)forward=0;
         forward = Math.pow(forward,2)*Math.signum(forward);
-        turn =this.getRawAxis(2)*Constants.turnSF;
+        turn =this.getRawAxis(4)*Constants.turnSF;
         if (turn<deadband && turn>-deadband)turn=0;
         turn = Math.pow(turn,2)*Math.signum(turn);
 

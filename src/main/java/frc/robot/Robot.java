@@ -132,15 +132,8 @@ public class Robot extends TimedRobot {
 
 // stick 0 actions        
 
-    if(joy0.getButton(1) && !joy0.getPrevButton(1) ){
-        Constants.readGains();
-        drive.setVelocityGains();
-        drive.resetEncoders();
-        drive.resetGyro();
-        SmartDashboard.putString("Messages", "Gains/Params set");
-    }
-
-    else if (joy0.getButton(2)&& !joy0.getPrevButton(2)) {
+    // A:  Turn LED on/off
+    if (joy0.getButton(1)&& !joy0.getPrevButton(1)) {
 //  colorSensor.getColor();
         if(LEDrelay){
             relayLED.set(Value.kOff);
@@ -155,15 +148,17 @@ public class Robot extends TimedRobot {
         LEDrelay=!LEDrelay;
     }
 
-    else if (joy0.getButton(3) && !joy0.getPrevButton(3) ){
+    //B:  Change LED pattern
+    else if (joy0.getButton(2) && !joy0.getPrevButton(2) ){
         pattern++;if(pattern>7)pattern=0;
         led.sendData(pattern);
         // camera.read(frame);
         // grip.process(frame);
     }
 
+    // X
     //read drive paramaters
-    else if (joy0.getButton(4) && !joy0.getPrevButton(4) ){
+    else if (joy0.getButton(3) && !joy0.getPrevButton(3) ){
             Constants.readDriveParams();
             drive.setRampTime(Constants.ramptime);
             }
@@ -172,40 +167,43 @@ public class Robot extends TimedRobot {
     if (joy0.getButton(7)  && !joy0.getPrevButton(7) && !runningPID){}
     //             limelight.driveStraightToTarget();
 
-    if (joy0.getButton(8))  turbo=true;
+    // top right trigger
+    if (joy0.getButton(6))  turbo=true;
     else turbo=false;
  
 
 // *************************************
 // ***    stick 1 actions            ***
 // *************************************    
-    if(joy1.getButton(1)) arm.setPosition(1);
-    else if(joy1.getButton(2)) arm.setPosition(2);
-    else if(joy1.getButton(3)) arm.setPosition(3);
-    else if(joy1.getButton(4)) arm.setPosition(4);
-    
+    // Y:  score position
+    if(joy1.getButton(1) && !joy1.getPrevButton(1)) arm.setPosition(2);  
+    // B:  ground position
+    else if(joy1.getButton(2) && !joy1.getPrevButton(2)) arm.setPosition(1);
+  
+    // TL Trigger: Intake   // TR Trigger:  Shoot
     if(joy1.getButton(5)) arm.shooterIn();
     else if (joy1.getButton(6)) arm.shooterOut();
-    else if(!runningPID)  arm.shooterStop();
+    else arm.shooterStop();
 
-    if(joy1.getButton(7)) arm.wofIn();
-    else if (joy1.getButton(8)) arm.wofOut();
-    else if(!runningPID)  arm.wofStop();
+    // Small Buttons:  WOF
+    if(joy1.getButton(13)) arm.wofIn();
+    else if (joy1.getButton(14)) arm.wofOut();
+    else  arm.wofStop();
 
-    if (joy1.getButton(9) && !joy1.getPrevButton(9) )  elevator.down();
-    else if (joy1.getButton(10) && !joy1.getPrevButton(10) )  elevator.up();        
+    // Left Stick Button:  Elevator Down    Right Stick Button: Elevator up
+    if (joy1.getButton(11) && !joy1.getPrevButton(11) )  elevator.down();
+    else if (joy1.getButton(12) && !joy1.getPrevButton(12) )  elevator.up();        
 
 
- 
-// else drive manually         
-    if(!runningPID) 
-        drive.setMotors(joy0.getLeft(),joy0.getRight(),ControlMode.Velocity);
+    // Drive       
+    drive.setMotors(joy0.getLeft(),joy0.getRight(),ControlMode.Velocity);
     
+    // Manual arm contrul
     if(joy1.isPushed())arm.manualSetPosition(joy1.forward);
      
     arm.brakeMonitor();
     drive.writeEncoderData();
-    drive.getCurrent();
+//    drive.getCurrent();
 //    limelight.getLimelightData();
     arm.writeArmData();
     

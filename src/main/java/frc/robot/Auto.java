@@ -30,6 +30,7 @@ public class Auto{
         bump = new BumpSensor(drive, joy0);
         pidStraightMagic= new PIDStraightMagic(drive,joy0);
 
+
         shoot3_side = new Profile("/home/lvuser/profile_side_shoot3.profile",2);   
         trench_shoot5 = new Profile("/home/lvuser/profile_trench_shoot5.profile",2);   
         straightarc60_48 = new Profile("/home/lvuser/profile_straightArc60_48.profile",2);   
@@ -63,10 +64,10 @@ public class Auto{
                 trenchShoot5(); 
             break;                           
             case "backup_pass":
-                mpctre.runProfile(straightarc60_48); 
+                mpctre.runProfile("/home/lvuser/profile_straightArc60_48.profile"); 
             break;                           
             case "Other":
-            mpctre.runProfile(straight60_48);    
+            mpctre.runProfile("/home/lvuser/profile_straight60_48.profile");    
         break;                           
             default:
               // Put default auto code here
@@ -97,7 +98,9 @@ public class Auto{
 
 private void shoot3Side()
 {   
-   mpctre.runProfile(shoot3_side);
+//   mpctre.runProfile(shoot3_side);
+    mpctre.runProfile("/home/lvuser/profile_side_shoot3.profile");
+
 }
 
 private void shoot3SideDelay()
@@ -128,7 +131,8 @@ private void pushShoot3()
 
 private void trenchShoot5()
 {   
-   mpctre.runProfile(trench_shoot5);
+//   mpctre.runProfile(trench_shoot5);
+    mpctre.runProfile("/home/lvuser/profile_trench_shoot5.profile");
 }
 
 

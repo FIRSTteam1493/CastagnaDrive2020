@@ -60,39 +60,21 @@ public class Constants{
     
     
     Constants(){
-        if(Robot.FX){
-            kSensorUnitsPerRotation=2048*10.39;  
-            wheelDiam = 5.9609;
-            wheelCircum = Math.PI*wheelDiam; //
-            kSensorUnitsPerInch=(kSensorUnitsPerRotation/wheelCircum);  //  1136.276
-            k_InchPerSecToVelUnits=(kSensorUnitsPerInch/10);  //  113.6276
-            maxVelUnitsPer100ms=14000;
-            // kP  KI,  kD,   kIz,   kFF,   kMin,   kMax,   Key for smartdash;
-            vel=new Gains(0.0050, 0.0, 0.0, 20, 0.05, -1, 1, "vel");  // 1023/468
-            posMP=new Gains(0.15, 0, 0.8, 0,  0.05, -1, 1, "posMP");
-            pos=new Gains(0.034900, 0, 0, 0, 0.0593, -1, 1, "pos");
-            angleRot=new Gains(0.0175, 0.0, 0.170, 0, 0.0, -0.5, 0.5, "rotate");
-            angleMP=new Gains(0.35, 0, .1, 0, 0, -0.5, 0.5, "angleMP");
-            sonar=new Gains(0, 0, 0, 0, 0.0, -1, 1, "sonar");
-            other=new Gains(0, 0, 0, 0, 0.0 , -1, 1, "other");    
-        }
-
-        else{
-            kSensorUnitsPerRotation=512;  // use this for 2019 robot
-            wheelDiam = 5.9606;
-            wheelCircum = Math.PI*wheelDiam; //17.09
-            kSensorUnitsPerInch=(kSensorUnitsPerRotation/wheelCircum);  // 30
-            k_InchPerSecToVelUnits=(kSensorUnitsPerInch/10);  // 3
-            maxVelUnitsPer100ms=468;  // ,measured on blocks  (encoder units/100ms)
-            vel=new Gains(0.0005, 0.0, 0.0, 20, 0.05, -1, 1, "vel");  // 1023/468
-            posMP=new Gains(3, 0, 1, 0, 2.158, -1, 1, "posMP");
-            pos=new Gains(0, 0, 0, 0, 0, -1, 1, "pos");
-            angleRot=new Gains(0.0175, 0.0, 0.170, 0, 0.0, -1.0, 1.0, "rotate");
-            angleMP=new Gains(3, 0, 2, 0, 0, -0.5, 0.5, "angleMP");
-            sonar=new Gains(0, 0, 0, 0, 0.0, -1, 1, "sonar");
-            other=new Gains(0, 0, 0, 0, 0.0 , -1, 1, "other");  
-        }
-
+    
+        kSensorUnitsPerRotation=2048*10.39;  
+        wheelDiam = 5.9609;
+        wheelCircum = Math.PI*wheelDiam; //
+        kSensorUnitsPerInch=(kSensorUnitsPerRotation/wheelCircum);  //  1136.276
+        k_InchPerSecToVelUnits=(kSensorUnitsPerInch/10);  //  113.6276
+        maxVelUnitsPer100ms=14000;
+        // kP  KI,  kD,   kIz,   kFF,   kMin,   kMax,   Key for smartdash;
+        vel=new Gains(0.0050, 0.0, 0.0, 20, 0.05, -1, 1, "vel");  // 1023/468
+        posMP=new Gains(0.15, 0, 0.8, 0,  0.05, -1, 1, "posMP");
+        pos=new Gains(0.034900, 0, 0, 0, 0.0593, -1, 1, "pos");
+        angleRot=new Gains(0.0175, 0.0, 0.170, 0, 0.0, -0.5, 0.5, "rotate");
+        angleMP=new Gains(0.35, 0, .1, 0, 0, -0.5, 0.5, "angleMP");
+        sonar=new Gains(0, 0, 0, 0, 0.0, -1, 1, "sonar");
+        other=new Gains(0, 0, 0, 0, 0.0 , -1, 1, "other");    
 
 // These are independant of drive motor type        
         k_gyroUnitsPerDegree=(8192.0/360.0);
@@ -107,9 +89,6 @@ public class Constants{
         forwardSF=0.8;
         ramptime=0.5;
         oneWayRampTime=3.0;
-    
-    
-    
     }
 
     static public void writeGains(){

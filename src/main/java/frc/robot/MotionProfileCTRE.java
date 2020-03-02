@@ -86,8 +86,10 @@ public class MotionProfileCTRE{
     }
     
 
-    public void runProfile(Profile _profile) {
-        profile = _profile;
+//    public void runProfile(Profile _profile) {
+    public void runProfile(String name) {
+//        profile = _profile;
+        profile = new Profile(name,2);
         iend=0;
         count=0;
         i=0;act1=0;

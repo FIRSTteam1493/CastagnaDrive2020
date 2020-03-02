@@ -19,43 +19,21 @@ import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class FalconDriveCTRE{
-
-    static boolean FX = Robot.FX;
     
-  TalonFX bl = new TalonFX(3);
+    TalonFX bl = new TalonFX(3);
     TalonFX br = new TalonFX(1);
     TalonFX fl = new TalonFX(4);
     TalonFX fr = new TalonFX(2);
-
-  
-/*    TalonSRX bl = new TalonSRX(2);
-    TalonSRX br = new TalonSRX(4);
-    TalonSRX fl = new TalonSRX(1);
-    TalonSRX fr = new TalonSRX(3);
-*/    
 
     double leftIn=0,rightIn=0;
     FeedbackDevice fbd;
     PigeonIMU gyro;
 
     FalconDriveCTRE(){
-
-
-        
-
-    if (FX) {
         fbd=FeedbackDevice.IntegratedSensor;
         gyro= new PigeonIMU(10);
-    }
-    else {
-        fbd=FeedbackDevice.QuadEncoder;
-        gyro= new PigeonIMU((new TalonSRX(7)).getDeviceID() );
-    }
+       initializeTalon();
 
-    initializeTalon();
-    
-    
-    
      }
 
 public void setRampTime(double ramptime){
@@ -134,6 +112,11 @@ public void getCurrent(){
 }  
 
 
+public void resetSensors(){
+    resetEncoders();
+    resetGyro();
+} 
+
 public void resetEncoders(){
     bl.setSelectedSensorPosition(0);
     br.setSelectedSensorPosition(0);
@@ -199,10 +182,10 @@ br.configFactoryDefault();
 fr.configFactoryDefault();
 bl.configFactoryDefault();
 fl.configFactoryDefault();  
-//br.configVoltageCompSaturation(12);
-//bl.configVoltageCompSaturation(12);
-//fr.configVoltageCompSaturation(12);
-//bl.configVoltageCompSaturation(12);
+br.configVoltageCompSaturation(12);
+bl.configVoltageCompSaturation(12);
+fr.configVoltageCompSaturation(12);
+bl.configVoltageCompSaturation(12);
 
 setBrakeMode();    
 
@@ -250,6 +233,7 @@ br.selectProfileSlot(Constants.slot_vel, 0);
 bl.selectProfileSlot(Constants.slot_vel, 0);
 
 setRampTime((Constants.ramptime));
+resetSensors();
 }
    
 
@@ -313,6 +297,7 @@ public void setupTalonMotionMagicRotate(){
    
     br.selectProfileSlot(Constants.slot_rotate, 0);
     br.selectProfileSlot(Constants.slot_pos, 1);
+    resetSensors();
    }
 
 
@@ -369,6 +354,7 @@ public void setupTalonMotionMagicStraight(){
 // feed forward on position, but not on angle 
     br.selectProfileSlot(Constants.slot_pos, 0);
     br.selectProfileSlot(Constants.slot_angleMP, 1);
+    resetSensors();
     
     
    }
@@ -376,7 +362,7 @@ public void setupTalonMotionMagicStraight(){
 
 
 //******************************************************************
-//*    Set Talon Parameters for Normal Operation                   *
+//*    Set Talon Parameters for Teleop Operation                   *
 //*     reset parameters that might have been changed in PID mode  *
 //******************************************************************   
    public void setupTalonTeleop(){
@@ -389,20 +375,15 @@ public void setupTalonMotionMagicStraight(){
     bl.configSelectedFeedbackCoefficient(1.0, 0, 20);
     br.configSelectedFeedbackCoefficient(1.0, 0, 20);
 
-
     br.setInverted(true);
     fr.setInverted(true);
     bl.setInverted(false);
     fl.setInverted(false);
     
 // use the velocity PID gains for the primary PID loop     
+    setPIDGains(Constants.slot_vel,Constants.vel);    
     br.selectProfileSlot(Constants.slot_vel, 0);
     bl.selectProfileSlot(Constants.slot_vel, 0);
-
-//    br.configVoltageCompSaturation(12);
- //   bl.configVoltageCompSaturation(12);
- //   fr.configVoltageCompSaturation(12);
- //   bl.configVoltageCompSaturation(12);
 }
 
 
@@ -421,10 +402,12 @@ public void setupTalonBump(){
     // set left output = PID0+PID1, right output PID0-PID1   
     br.configAuxPIDPolarity(true, 20);
 
+    setPIDGains(Constants.slot_vel,Constants.vel);    
     setPIDGains(Constants.slot_angleMP,Constants.angleMP);
     br.selectProfileSlot(Constants.slot_vel, 0);
     br.selectProfileSlot(Constants.slot_angleMP, 1);
     br.setSelectedSensorPosition(0);
+    resetSensors();
 }
 
 }

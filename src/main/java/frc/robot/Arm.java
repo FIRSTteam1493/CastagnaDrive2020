@@ -101,6 +101,7 @@ public void manualSetPosition(double stickInput){
   //  if (setPoint<floorPos) setPoint=floorPos;
   // use profile slot 1
     armMotor.selectProfileSlot(1,0);
+//    armMotor.set(ControlMode.PercentOutput, 0.5*stickInput);
     armMotor.set(ControlMode.MotionMagic, setPoint);
 //    if (armMotor.getSensorCollection().isFwdLimitSwitchClosed() == 1) armMotor.setSelectedSensorPosition(floorPos);
 //    if (armMotor.getSensorCollection().isRevLimitSwitchClosed() == 1) armMotor.setSelectedSensorPosition(0);
