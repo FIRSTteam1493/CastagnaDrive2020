@@ -85,9 +85,9 @@ public class Constants{
         timeOnTargetGoal=0.2;
         errorAllowable=0.5;
         minTurnInp=0.04;
-        turnSF=0.8;
-        forwardSF=0.8;
-        ramptime=0.5;
+        turnSF=0.6;
+        forwardSF=0.7;
+        ramptime=0.35;
         oneWayRampTime=3.0;
     }
 

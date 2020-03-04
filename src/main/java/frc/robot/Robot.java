@@ -30,16 +30,19 @@ public class Robot extends TimedRobot {
 //    BadLog log;
     VideoCapture camera;
     GripPipeline grip = new GripPipeline();
-    Sonar sonar = new Sonar(1);
+//    Sonar sonar = new Sonar(2);
  //   SonarDigital sonarDigital = new SonarDigital();
     Stick joy0 = new Stick(0), joy1=new Stick(1);
     FalconDriveCTRE drive = new FalconDriveCTRE();  
     Elevator elevator = new Elevator();
     Arm arm = new Arm();
     MotionProfileCTRE mpctre = new MotionProfileCTRE(drive, joy0, arm);
-
+    ColorSensor colorSensor = new ColorSensor();
     Limelight limelight = new Limelight(joy0, drive, mpctre);
+    
     LEDdriver led = new LEDdriver();
+    
+  
     Relay relayLimelight = new Relay(3);
     Relay relayLED = new Relay(1);
     Compressor compressor = new Compressor();
@@ -63,7 +66,7 @@ public class Robot extends TimedRobot {
     //camera = new VideoCapture(0);
 
     // use this one
-    //  CameraServer.getInstance().startAutomaticCapture();
+      CameraServer.getInstance().startAutomaticCapture();
 
     m_chooser.setDefaultOption("do_nothing", "do_nothing");
     m_chooser.addOption("shoot3_straight", "shoot3_straight");
@@ -179,7 +182,10 @@ public class Robot extends TimedRobot {
     if(joy1.getButton(1) && !joy1.getPrevButton(1)) arm.setPosition(2);  
     // B:  ground position
     else if(joy1.getButton(2) && !joy1.getPrevButton(2)) arm.setPosition(1);
-  
+    // A:  intake position
+    else if(joy1.getButton(4) && !joy1.getPrevButton(4)) arm.setPosition(3);
+
+
     // TL Trigger: Intake   // TR Trigger:  Shoot
     if(joy1.getButton(5)) arm.shooterIn();
     else if (joy1.getButton(6)) arm.shooterOut();
@@ -196,7 +202,7 @@ public class Robot extends TimedRobot {
 
 
     // Drive       
-    drive.setMotors(joy0.getLeft(),joy0.getRight(),ControlMode.Velocity);
+    drive.setMotors(joy0.getLeft(),joy0.getRight(),ControlMode.PercentOutput);
     
     // Manual arm contrul
     if(joy1.isPushed())arm.manualSetPosition(joy1.forward);

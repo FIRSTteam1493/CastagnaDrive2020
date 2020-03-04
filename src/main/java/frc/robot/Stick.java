@@ -12,7 +12,7 @@ public class Stick extends Joystick{
     Stick(int portnum){
         super(portnum);       
         numButtons = this.getButtonCount();  // ??? This didn't work on switch joystick
-        numButtons=11;
+        numButtons=15;
         _button = new boolean[numButtons];
         button = new boolean[numButtons];
 
