@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  
 public class Arm{
     private TalonFX armMotor = new TalonFX(6);
-    private int topPos = 77000, intakePos=82000,scorePos=77000, floorPos = 0;
+    private int topPos = 74000, intakePos=74000,scorePos=57000, floorPos = -22000;
     private CANSparkMax shooterMotor = new CANSparkMax(3, MotorType.kBrushless);
     private CANSparkMax wofMotor = new CANSparkMax(2, MotorType.kBrushless);
     private Solenoid armsol1 = new Solenoid(3);
@@ -24,6 +24,7 @@ public class Arm{
     private AnalogInput lsfAnalogIn = new AnalogInput(0);
     private AnalogInput lsrAnalogIn = new AnalogInput(1);
     private boolean lsf=false, lsr=false;
+    public boolean pidRunning=false;
     private double lsfVolt, lsrVolt;
     
     // On Position:   solState1 = true       solState2 = false
@@ -35,6 +36,7 @@ public class Arm{
 Arm(){
 
     armMotor.configFactoryDefault();
+    armMotor.configNeutralDeadband(0.005);
 //   armMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector , LimitSwitchNormal.NormallyOpen);
 //    armMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
     armMotor.set(ControlMode.PercentOutput, 0);
@@ -76,6 +78,7 @@ Arm(){
 
 
 public void setPosition(int pos){
+    pidRunning=true;
     armMotor.selectProfileSlot(0, 0);
     int currentpos=armMotor.getSelectedSensorPosition(0);
 
@@ -101,6 +104,7 @@ public void setPosition(int pos){
 
 
 public void manualSetPosition(double stickInput){
+    pidRunning=false;
     if((lsf && stickInput<0 )|| (lsr && stickInput>0)) return;
     int currentPos = armMotor.getSelectedSensorPosition(0);
     double setPoint = currentPos+stickInput*10000;
@@ -134,13 +138,14 @@ public void wofStop(){
 }
 
 public void writeArmData(){
-    SmartDashboard.putNumber("Arm/Arm Pos",armMotor.getSelectedSensorPosition(0));
-    SmartDashboard.putNumber("Arm/Arm Error",armMotor.getClosedLoopError(0));
-    SmartDashboard.putNumber("Arm/Arm Output",armMotor.getMotorOutputPercent());
-    SmartDashboard.putBoolean("Arm/Fwd Limit",lsf);
-    SmartDashboard.putBoolean("Arm/Rev Limit",lsr);
-    SmartDashboard.putNumber("Arm/Fwd LimitVolt",lsfVolt);
-    SmartDashboard.putNumber("Arm/Rev LimitVolt",lsrVolt);
+//    SmartDashboard.putNumber("Arm/Arm Pos",armMotor.getSelectedSensorPosition(0));
+ //   SmartDashboard.putNumber("Arm/Arm Error",armMotor.getClosedLoopError(0));
+//  SmartDashboard.putNumber("Arm/Arm Output",armMotor.getMotorOutputPercent());
+ //   SmartDashboard.putBoolean("Arm/Fwd Limit",lsf);
+ //   SmartDashboard.putBoolean("Arm/Rev Limit",lsr);
+ //   SmartDashboard.putNumber("Arm/Fwd LimitVolt",lsfVolt);
+ //   SmartDashboard.putNumber("Arm/Rev LimitVolt",lsrVolt);
+    SmartDashboard.putNumber("Arm/Rev Current",armMotor.getStatorCurrent());
     
   
 
@@ -172,8 +177,11 @@ public void brakeMonitor(){
     if (lsfVolt>2.5 ) lsf=false;
     else {
         lsf=true;
-        if (armVolt<0) armMotor.set(ControlMode.PercentOutput, 0);
+        if (armVolt<0) {
+            armMotor.set(ControlMode.PercentOutput, 0);
+        }
         armMotor.setSelectedSensorPosition(0);
+
     }
 
     if (lsrAnalogIn.getVoltage()>2.5) lsr=false;
@@ -194,8 +202,8 @@ public void brakeMonitor(){
     }
 }
 
-
-
-
+public void armMotorStop(){
+    armMotor.set(ControlMode.PercentOutput, 0);
+}
 
 } 

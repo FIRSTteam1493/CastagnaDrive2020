@@ -130,13 +130,13 @@ public void resetGyro(){
 public void writeEncoderData(){
     SmartDashboard.putNumber("Drive/Left Pos", getlpos());
     SmartDashboard.putNumber("Drive/Right Pos", getrpos());
-    SmartDashboard.putNumber("Drive/Left Vel", getlvel());
-    SmartDashboard.putNumber("Drive/Right Vel", getrvel() );
+ //   SmartDashboard.putNumber("Drive/Left Vel", getlvel());
+ //   SmartDashboard.putNumber("Drive/Right Vel", getrvel() );
     SmartDashboard.putNumber("Drive/Left Vel RPM", getlvel()*600/Constants.kSensorUnitsPerRotation);
     SmartDashboard.putNumber("Drive/Right Vel RPM", getrvel()*600/Constants.kSensorUnitsPerRotation );
     SmartDashboard.putNumber("Drive/Angle", getAngle() );
-    SmartDashboard.putNumber("PIDTuning/CLE0_Right", br.getClosedLoopError(0));
-    SmartDashboard.putNumber("PIDTuning/CLE1_Right", br.getClosedLoopError(1));
+//    SmartDashboard.putNumber("PIDTuning/CLE0_Right", br.getClosedLoopError(0));
+//    SmartDashboard.putNumber("PIDTuning/CLE1_Right", br.getClosedLoopError(1));
     SmartDashboard.putNumber("Drive/FL Pos", fl.getSelectedSensorPosition(0));
     SmartDashboard.putNumber("Drive/FR Pos", fr.getSelectedSensorPosition(0));
 
@@ -186,7 +186,10 @@ br.configVoltageCompSaturation(12);
 bl.configVoltageCompSaturation(12);
 fr.configVoltageCompSaturation(12);
 bl.configVoltageCompSaturation(12);
-
+bl.configNeutralDeadband(0.005);
+br.configNeutralDeadband(0.005);
+fl.configNeutralDeadband(0.005);
+fr.configNeutralDeadband(0.005);
 setBrakeMode();    
 
 // invert the right side

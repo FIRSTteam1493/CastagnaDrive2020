@@ -5,7 +5,6 @@ public class Stick extends Joystick{
     public double leftinput=0,rightinput=0, forward,turn;
     private boolean[] _button,button;
     int numButtons;
-    double deadband = 0.05;
     double xPrev = 0;
     double forwardSF=0.7,turnSF=0.5;
 
@@ -57,13 +56,12 @@ public class Stick extends Joystick{
     // get the forward and turn axis, and convert to left and right motor inputs        
     // square the inputs for enhanced low speed control and apply deadband  
         double sf=Constants.forwardSF;
+        double slowsf = 1-0.32*this.getRawAxis(3);
         if(Robot.turbo)sf=1;
 //        forward=-getRampedInput()*sf;
-        forward = -this.getRawAxis(1)*sf;  
-        if (forward<deadband && forward>-deadband)forward=0;
+        forward = -this.getRawAxis(1)*sf*slowsf;  
         forward = Math.pow(forward,2)*Math.signum(forward);
         turn =this.getRawAxis(4)*Constants.turnSF;
-        if (turn<deadband && turn>-deadband)turn=0;
         turn = Math.pow(turn,2)*Math.signum(turn);
 
         leftinput=forward+turn;
@@ -76,7 +74,6 @@ public class Stick extends Joystick{
 
     public void readOperatorJoy() {
             forward = -this.getRawAxis(1);           
-            if (forward<deadband && forward>-deadband)forward=0;   
             turn =0;
         }
     

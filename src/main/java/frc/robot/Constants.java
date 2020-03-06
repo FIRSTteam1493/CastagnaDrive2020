@@ -87,7 +87,7 @@ public class Constants{
         minTurnInp=0.04;
         turnSF=0.6;
         forwardSF=0.7;
-        ramptime=0.35;
+        ramptime=0.4;
         oneWayRampTime=3.0;
     }
 

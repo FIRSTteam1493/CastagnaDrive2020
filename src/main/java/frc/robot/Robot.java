@@ -37,7 +37,7 @@ public class Robot extends TimedRobot {
     Elevator elevator = new Elevator();
     Arm arm = new Arm();
     MotionProfileCTRE mpctre = new MotionProfileCTRE(drive, joy0, arm);
-    ColorSensor colorSensor = new ColorSensor();
+    ColorSensor colorSensor = new ColorSensor(); 
     Limelight limelight = new Limelight(joy0, drive, mpctre);
     
     LEDdriver led = new LEDdriver();
@@ -63,10 +63,11 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("Messages", "Hello");
     Constants.writeGains();
     Constants.writeDriveParams();
-    //camera = new VideoCapture(0);
+//    camera = new VideoCapture(1);
 
     // use this one
       CameraServer.getInstance().startAutomaticCapture();
+      CameraServer.getInstance().startAutomaticCapture(1);
 
     m_chooser.setDefaultOption("do_nothing", "do_nothing");
     m_chooser.addOption("shoot3_straight", "shoot3_straight");
@@ -206,7 +207,7 @@ public class Robot extends TimedRobot {
     
     // Manual arm contrul
     if(joy1.isPushed())arm.manualSetPosition(joy1.forward);
-     
+    else if(!arm.pidRunning) arm.armMotorStop();
     arm.brakeMonitor();
     drive.writeEncoderData();
 //    drive.getCurrent();

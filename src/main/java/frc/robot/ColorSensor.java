@@ -3,16 +3,20 @@ package frc.robot;
 // imports
 
 import edu.wpi.first.wpilibj.I2C.Port;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 
 import com.revrobotics.ColorSensorV3;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ColorMatchResult;
-
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorMatch;
 
 public class ColorSensor{
+  private CANSparkMax wofMotor = new CANSparkMax(2, MotorType.kBrushless);
 boolean runSensor=false;
 // class variables
 I2C color = new I2C(Port.kOnboard,0x52);
@@ -29,6 +33,9 @@ m_colorMatcher.addColorMatch(kBlueTarget);
 m_colorMatcher.addColorMatch(kGreenTarget);
 m_colorMatcher.addColorMatch(kRedTarget);
 m_colorMatcher.addColorMatch(kYellowTarget);
+wofMotor.restoreFactoryDefaults();
+wofMotor.setIdleMode(IdleMode.kBrake);
+
 }
 
 public String getColor(){
@@ -86,6 +93,25 @@ return initialColor;
 
 
 
+public void wofIn(){
+  wofMotor.set(0.5);
+}
+
+public void wofOut(){
+  wofMotor.set(-0.5);
+}
+
+public void wofStop(){
+  wofMotor.set(0);
+}
+
+
+public void getGameData(){
+  String gameData; 
+  gameData = DriverStation.getInstance().getGameSpecificMessage(); 
+  DriverStation.getInstance().
+  
+}
 
 
 }
